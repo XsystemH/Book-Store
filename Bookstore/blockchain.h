@@ -43,7 +43,11 @@ public:
     }
   }
 
-  ~blockchain() = default;
+  ~blockchain()
+  {
+    Node.close();
+    Info.close();
+  }
 
   std::vector<int> findN(std::string *index)
   {
