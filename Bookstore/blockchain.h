@@ -47,60 +47,64 @@ public:
 
   ~blockchain() = default;
 
-  std::vector<int> findN(std::string *index)
+  std::vector<std::pair<int, int>> findN(std::string *index)
   {
-    std::vector<int> poss;
+    std::vector<std::pair<int, int>> poss;
     node tpr;
     Node.seekg(0, std::ios::beg);
     Node.read(reinterpret_cast<char*>(&tpr), Nsize);
+    int posN;
     while (tpr.next != -1)
     {
-      Node.seekg(tpr.next);
+      posN = Node.tellg();
       if (index > tpr.maxn)
       {
         continue;
       }
       else if (tpr.minn <= index && index < tpr.maxn)
       {
-        poss.push_back(tpr.pos);
+        poss.push_back(std::make_pair(posN, tpr.pos));
         break;
       }
       else if (index == tpr.maxn)
       {
-        poss.push_back(tpr.pos);
+        poss.push_back(std::make_pair(posN, tpr.pos));
       }
       else if (index < tpr.minn)
       {
         break;
       }
+      Node.seekg(tpr.next);
+      Node.read(reinterpret_cast<char*>(&tpr), Nsize);
     }
     return poss;
   }
 
-  info findI(std::vector<int> &poss, info target, int &pos)
+  bool findI(std::vector<std::pair<int, int>> &poss, info target, int &pos0, int &posN)
   {
     int size;
     info val;
     for(int i = 0; i < poss.size(); i++)
     {
-      Info.seekg(poss[i], std::ios::beg);
+      Info.seekg(poss[i].second, std::ios::beg);
       Info.read(reinterpret_cast<char*>(&size), sizeof(int));
-      for(int i = 0; i <= size; i++)
+      posN = poss[i].first;
+      for(int j = 0; j <= size; j++)
       {
         Info.seekg(Isize, std::ios::cur);
         Info.read(reinterpret_cast<char*>(&val), Isize);
-        pos = Info.tellg();
+        pos0 = Info.tellg();
         if(val == target)
         {
-          return val;
+          return true;
         }
         if(val.index == target.index && val.value > target.value)
         {
-          return nullptr;
+          return false;
         }
       }
     }
-    return nullptr;
+    return false;
   }
 
   std::vector<int> findI(std::vector<int> &poss, std::string index)
