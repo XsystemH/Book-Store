@@ -48,7 +48,7 @@ public:
 
   ~blockchain() = default;
 
-  std::vector<std::pair<int, int>> findN(std::string *index)
+  std::vector<std::pair<int, int>> findN(std::string &index)
   {
     std::vector<std::pair<int, int>> poss;
     node tpr;
@@ -96,7 +96,7 @@ public:
         Info.seekg(Isize, std::ios::cur);
         Info.read(reinterpret_cast<char*>(&val), Isize);
         posI = Info.tellg();
-        if(val == target)
+        if(val.index == target.index && val.value == target.value)
         {
           return true;
         }
@@ -161,11 +161,11 @@ public:
       head.next = -1;
       head.last = -1;
       Node.seekp(0, std::ios::beg);
-      Node.write(reinterpret_cast<char*>(head), Nsize);
+      Node.write(reinterpret_cast<char*>(&head), Nsize);
       Info.seekp(0, std::ios::beg);
       Info.write(reinterpret_cast<char*>((int)1), sizeof(int));
       Info.seekp(sizeof(int), std::ios::cur);
-      Info.write(reinterpret_cast<char*>(target), Isize);
+      Info.write(reinterpret_cast<char*>(&target), Isize);
       Nsum++;
       return;
     } // 创建新的node节点
@@ -211,7 +211,7 @@ public:
     int pos0, posI, posN;
     std::vector<std::pair<int, int>> poss;
     poss = findN(target.index);
-    findI(&poss, &target, &pos0, &posI, &posN);
+    findI(poss, target, pos0, posI, posN);
     insert(pos0, posI, posN, target);
     return;
   }
