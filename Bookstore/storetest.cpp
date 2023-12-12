@@ -1,7 +1,6 @@
 //
 // Created by 13199 on 2023/12/12.
 //
-#include "1336.hpp"
 #include "blockchain.h"
 #include <iostream>
 #include <string>
