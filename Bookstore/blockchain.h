@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <utility>
 #include <vector>
 
 const size_t Max = 300;
@@ -80,7 +81,7 @@ public:
     return poss;
   }
 
-  bool findI(std::vector<std::pair<int, int>> &poss, info target, int &pos0, int &posN)
+  bool findI(std::vector<std::pair<int, int>> &poss, info &target, int &pos0, int &posI, int &posN)
   {
     int size;
     info val;
@@ -89,11 +90,12 @@ public:
       Info.seekg(poss[i].second, std::ios::beg);
       Info.read(reinterpret_cast<char*>(&size), sizeof(int));
       posN = poss[i].first;
+      pos0 = poss[i].second;
       for(int j = 0; j <= size; j++)
       {
         Info.seekg(Isize, std::ios::cur);
         Info.read(reinterpret_cast<char*>(&val), Isize);
-        pos0 = Info.tellg();
+        posI = Info.tellg();
         if(val == target)
         {
           return true;
@@ -107,14 +109,14 @@ public:
     return false;
   }
 
-  std::vector<int> findI(std::vector<int> &poss, std::string index)
+  std::vector<int> findI(std::vector<std::pair<int, int>> &poss, std::string index)
   {
     std::vector<int> vals;
     int size;
     info val;
     for(int i = 0; i < poss.size(); i++)
     {
-      Info.seekg(poss[i], std::ios::beg);
+      Info.seekg(poss[i].second, std::ios::beg);
       Info.read(reinterpret_cast<char*>(&size), sizeof(int));
       for(int i = 0; i <= size; i++)
       {
@@ -201,6 +203,16 @@ public:
       Node.write(reinterpret_cast<char*>(&old), Nsize);
       // 更新节点最大范围
     }
+    return;
+  }
+
+  void insert(info target)
+  {
+    int pos0, posI, posN;
+    std::vector<std::pair<int, int>> poss;
+    poss = findN(target.index);
+    findI(&poss, &target, &pos0, &posI, &posN);
+    insert(pos0, posI, posN, target);
     return;
   }
 
