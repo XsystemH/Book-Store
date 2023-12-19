@@ -3,6 +3,7 @@
 //
 #include "blockchain.h"
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -10,8 +11,8 @@ class node
 {
 public:
 
-  std::string maxn;
-  std::string minn;
+  char maxn[65];
+  char minn[65];
   int pos;
   int next;
   int last;
@@ -20,8 +21,8 @@ public:
 
   node()
   {
-    maxn = std::string(64, ' ');
-    minn = std::string(64, ' ');
+    strcpy(maxn, "");
+    strcpy(minn, "");
   }
   ~node() = default;
 };
@@ -29,13 +30,13 @@ public:
 class info
 {
 public:
-  std::string index;
+  char index[65]{};
   int value;
 public:
   info() = default;
   info(std::string i, int v)
   {
-    index = i;
+    strcpy(index, i.c_str());
     value = v;
   }
   ~info() = default;
@@ -43,6 +44,16 @@ public:
 
 int main()
 {
+//  std::fstream f;
+//  f.open("test.bin");
+//  int tmp = 0;
+//  if (!f.good())
+//  {
+//    f.open("test.bin", std::ios::out | std::ios::binary);
+//    f.close();
+//    f.open("test.bin");
+//    f.write(reinterpret_cast<char *>(&tmp), sizeof(int));
+//  }
   blockchain<node, info> mychain("NODE", "INFO");
   int n;
   std::cin >> n;
@@ -60,7 +71,8 @@ int main()
     else if (command == "delete")
     {
       std::cin >> value;
-      // mychain.delete(index, value);
+      info temp(index, value);
+      mychain.deleteI(temp);
     }
     else if (command == "find")
     {
