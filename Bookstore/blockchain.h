@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-const size_t Max = 150;
+const size_t Max = 8;
 
 template<class node, class info>
 class blockchain
@@ -104,6 +104,7 @@ public:
       posN -= Nsize;
       if (index > maxn_str)
       {
+        poss.push_back(std::make_pair(posN, tpr.pos));
         break;
       }
       else if (minn_str <= index && index < maxn_str)
@@ -182,12 +183,12 @@ public:
 
   std::vector<int> findI(std::vector<std::pair<int, int>> &poss, std::string index)
   {
-    Info.open(INFO);
     std::vector<int> vals;
     int size;
     info block[Max];
     for (int i = 0; i < poss.size(); i++)
     {
+      Info.open(INFO);
       Info.seekg(poss[i].second, std::ios::beg);
       Info.read(reinterpret_cast<char*>(&size), sizeof(int));
 //      Info.seekg(sizeof(int), std::ios::cur);
@@ -199,8 +200,8 @@ public:
           vals.push_back(block[j].value);
         }
       }
+      Info.close();
     }
-    Info.close();
     return vals;
   }
 
