@@ -272,9 +272,8 @@ public:
 
     if (size == Max)
     {
-      if (devide(pos0, posI, posN, size, target))
-        return;
-      size = Max / 2;
+      devide(pos0, posI, posN, size, target);
+      return;
     }
 
     int back = size - posI;
@@ -341,56 +340,67 @@ public:
     insert(pos0, posI, posN, target);
   }
 
-  bool devide(int pos0, int posI, int posN, int size, info target)
+  void devide(int pos0, int posI, int posN, int size, info target)
   {
-    bool did_insert = false;
+    Node.open(NODE);
+    Info.open(INFO);
     node oldnode;
     node newnode;
     info temp;
     Node.seekg(posN, std::ios::beg);
     Node.read(reinterpret_cast<char*>(&oldnode), Nsize);
-    // 找到目标位置
-    int topos = sizeof(int) + Nsum * Isize * Max;
-    newnode.pos = topos;
-    Info.seekg(pos0 + (Max / 2 - 1) * Isize + sizeof(int), std::ios::beg);
-    // 修改原node的范围
-    Info.read(reinterpret_cast<char*>(&temp), Isize);
-    strcpy(oldnode.maxn, temp.index);
-    Info.seekg(Isize, std::ios::cur);
-    // 移动到目标位置，复制内容
-    Info.seekp(topos, std::ios::beg);
-    for(int i = 1; i <= size - Max / 2; i++)
-    {
-      if(Info.tellg() == posI)
-      {
-        Info.write(reinterpret_cast<char*>(&target), Isize);
-        Info.seekp(Isize, std::ios::cur);
-        did_insert = true;
-        continue;
-      } // 顺便插入
 
-      Info.read(reinterpret_cast<char*>(&temp), Isize);
-      Info.write(reinterpret_cast<char*>(&temp), Isize);
-      Info.seekg(Isize, std::ios::cur);
-      Info.seekp(Isize, std::ios::cur); // 复制
+    info block[Max];
+    info newblock[Max];
+    int size1 = Max / 2;
+    int size2 = Max / 2;
+    Nsum++;
+    Info.seekg(pos0 + sizeof(int), std::ios::beg);
+    Info.read(reinterpret_cast<char*>(&block), Max * Isize);
 
-      if(i == 1)
-      {
-        strcpy(newnode.minn, temp.index);
-      } // 记录newnode范围
+    for (int i = 0; i < Max / 2; i++) {
+      newblock[i] = block[i + Max / 2];
     }
-    strcpy(newnode.maxn, temp.index);
-    newnode.last = posN;
+
+    if (posI < Max / 2) {
+      for (int i = size1; i > posI; i--) {
+        block[i] = block[i - 1];
+      }
+      block[posI] = target;
+      size1++;
+    }
+    else {
+      posI -= Max / 2;
+      for (int i = size1; i > posI; i--) {
+        newblock[i] = newblock[i - 1];
+      }
+      newblock[posI] = target;
+      size2++;
+    }
+    Info.seekp(pos0, std::ios::beg);
+    Info.write(reinterpret_cast<char*>(&size1), sizeof(int));
+    Info.write(reinterpret_cast<char*>(&block), size1 * Isize);
+    int iend = (sizeof(int) + Isize) * Max * Nsum;
+    int nend = 2 * sizeof(int) + Nsize * Nsum;
+    Info.seekp(iend, std::ios::beg);
+    Info.write(reinterpret_cast<char*>(&size2), sizeof(int));
+    Info.write(reinterpret_cast<char*>(&newblock), size2 * Isize);
+    strcpy(oldnode.minn, block[0].index);
+    strcpy(oldnode.maxn, block[size1 - 1].index);
+    strcpy(newnode.minn, newblock[0].index);
+    strcpy(newnode.maxn, newblock[size2 - 1].index);
+    newnode.pos = iend;
     newnode.next = oldnode.next;
-    Node.seekg(0, std::ios::end);
-    oldnode.next = Node.tellg();
+    oldnode.next = nend;
+    Node.seekp(sizeof(int), std::ios::beg);
+    Node.write(reinterpret_cast<char*>(&Nsum), sizeof(int));
     Node.seekp(posN, std::ios::beg);
     Node.write(reinterpret_cast<char*>(&oldnode), Nsize);
-    Node.seekp(0, std::ios::end);
-    Node.write(reinterpret_cast<char*>(&newnode), Nsize);
-    Info.close();
+    Node.seekp(nend, std::ios::beg);
+    Node.write(reinterpret_cast<char*>(&nend), Nsize);
+
     Node.close();
-    return did_insert;
+    Info.close();
   }
 };
 
