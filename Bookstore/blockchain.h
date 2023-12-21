@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-const size_t Max = 8;
+const size_t Max = 150;
 
 template<class node, class info>
 class blockchain
@@ -27,13 +27,7 @@ private:
   std::fstream Info;
 
 public:
-// fstream f;
-// f.open("dsa");
-// if(!f.good()){
-//   f.open("dsa", std::ios::out);
-//   f.close();
-//   f.open("dsa");
-// }
+
   blockchain(std::string Nname, std::string Iname)
   {
     Nsum = 0;
@@ -49,7 +43,7 @@ public:
       Node.close();
       Node.open(NODE); // 创建文件
 
-      head = -1;
+      head = 0;
       Node.seekp(0, std::ios::beg);
       Node.write(reinterpret_cast<char*>(&head), sizeof(int)); // 写入初始化head指针 指向-1(means null)
       Node.seekp(sizeof(int), std::ios::beg);
@@ -93,19 +87,20 @@ public:
 //    std::cout << "now at: " << Node.tellg() << std::endl;
     Node.read(reinterpret_cast<char*>(&hp), sizeof(int));
     Node.seekg(2 * sizeof(int) + hp * Nsize, std::ios::beg);
-    hp = head;
+//    hp = head;
     Node.read(reinterpret_cast<char*>(&tpr), Nsize);
     bool fir = true;
+    bool more = false;
     do
     {
+      more = false;
       std::string maxn_str = tpr.maxn;
       std::string minn_str = tpr.minn;
       posN = Node.tellg();
       posN -= Nsize;
-      if (index > maxn_str)
+      if (index > maxn_str && tpr.next == -1)
       {
         poss.push_back(std::make_pair(posN, tpr.pos));
-        break;
       }
       else if (minn_str <= index && index < maxn_str)
       {
@@ -129,8 +124,9 @@ public:
       if (tpr.next != -1) {
         Node.seekg(tpr.next, std::ios::beg);
         Node.read(reinterpret_cast<char *>(&tpr), Nsize);
+        more = true;
       }
-    }while (tpr.next != -1);
+    }while (tpr.next != -1 || more);
     Node.close();
     return poss;
   }
@@ -140,12 +136,14 @@ public:
   {
     Info.open(INFO);
     int size;
+    posI = 0;
     for (int i = 0; i < poss.size(); i++) // 多个块中可能包含所对应的内容
     {
       Info.seekg(poss[i].second, std::ios::beg);
       Info.read(reinterpret_cast<char*>(&size), sizeof(int));
       posN = poss[i].first;
       pos0 = poss[i].second;
+      if (size == 0) continue;
 
       info block[Max];
 //      Info.seekg(sizeof(int), std::ios::cur);
@@ -159,23 +157,23 @@ public:
         mid = (l + r) / 2;
         std::string bstr = block[mid].index;
         std::string tstr = target.index;
-        if (bstr < tstr || bstr == tstr && block[mid].value <= target.value)
-        {
-          l = mid + 1;
-          posI = mid + 1;
-          if (bstr == tstr && block[mid].value == target.value)
-          {
-            posI = mid;
+        if (tstr < bstr || (tstr == bstr && target.value <= block[mid].value)) {
+          posI = mid;
+          r = mid - 1;
+          if (tstr == bstr && target.value == block[mid].value) {
             Info.close();
             return true;
           }
         }
-        else if (bstr > tstr || block[mid].value > target.value)
-        {
-          r = mid - 1;
-          posI = mid;
+        else {
+          posI = mid + 1;
+          l = mid + 1;
         }
       } // while
+      if (r != size - 1 && size > 1) {
+        Info.close();
+        return false;
+      }
     } // for i
     Info.close();
     return false;
@@ -223,21 +221,20 @@ public:
     }
     Info.seekp(pos0, std::ios::beg);
     Info.write(reinterpret_cast<char*>(&size), sizeof(int));
-    Info.write(reinterpret_cast<char*>(&block), size * Isize);\
+    Info.write(reinterpret_cast<char*>(&block), size * Isize);
     if (posI == size) {
       Node.open(NODE);
-      Node.seekg(posN + sizeof(int), std::ios::beg);
-      Node.seekp(posN + sizeof(int), std::ios::beg);
       node changenode;
+      Node.seekg(posN, std::ios::beg);
       Node.read(reinterpret_cast<char*>(&changenode), Nsize);
       strcpy(changenode.maxn, block[size - 1].index);
+      Node.seekp(posN, std::ios::beg);
       Node.write(reinterpret_cast<char*>(&changenode), Nsize);
       Node.close();
     }
     if (posI == 0) {
       Node.open(NODE);
-      Node.seekg(posN + sizeof(int), std::ios::beg);
-      Node.seekp(posN + sizeof(int), std::ios::beg);
+      Node.seekg(posN, std::ios::beg);
       node changenode;
       Node.read(reinterpret_cast<char*>(&changenode), Nsize);
       if (size != 0) strcpy(changenode.minn, block[0].index);
@@ -245,6 +242,7 @@ public:
         strcpy(changenode.maxn, "");
         strcpy(changenode.minn, "");
       }
+      Node.seekp(posN, std::ios::beg);
       Node.write(reinterpret_cast<char*>(&changenode), Nsize);
       Node.close();
     }
@@ -273,6 +271,8 @@ public:
 
     if (size == Max)
     {
+      Node.close();
+      Info.close();
       devide(pos0, posI, posN, size, target);
       return;
     }
@@ -290,16 +290,14 @@ public:
     Info.write(reinterpret_cast<char*>(&size), sizeof(int));
     Info.write(reinterpret_cast<char*>(&block), Isize * size);
 
-    if (back == 0)
-    {
-      Node.seekg(posN, std::ios::beg);
-      Node.seekp(posN, std::ios::beg);
-      node old;
-      Node.read(reinterpret_cast<char*>(&old), Nsize);
-      strcpy(old.maxn, target.index);
-      Node.write(reinterpret_cast<char*>(&old), Nsize);
-      // 更新节点最大范围
-    }
+    node old;
+    Node.seekg(posN, std::ios::beg);
+    Node.read(reinterpret_cast<char*>(&old), Nsize);
+    strcpy(old.minn, block[0].index);
+    strcpy(old.maxn, block[size - 1].index);
+    Node.seekp(posN, std::ios::beg);
+    Node.write(reinterpret_cast<char*>(&old), Nsize);
+    // 更新节点范围
     Node.close();
     Info.close();
   }
@@ -349,13 +347,13 @@ public:
     node newnode;
     info temp;
     Node.seekg(posN, std::ios::beg);
+//    std::cout << "now at: " << Node.tellg() << std::endl;
     Node.read(reinterpret_cast<char*>(&oldnode), Nsize);
 
     info block[Max];
     info newblock[Max];
     int size1 = Max / 2;
     int size2 = Max / 2;
-    Nsum++;
     Info.seekg(pos0 + sizeof(int), std::ios::beg);
     Info.read(reinterpret_cast<char*>(&block), Max * Isize);
 
@@ -381,8 +379,9 @@ public:
     Info.seekp(pos0, std::ios::beg);
     Info.write(reinterpret_cast<char*>(&size1), sizeof(int));
     Info.write(reinterpret_cast<char*>(&block), size1 * Isize);
-    int iend = (sizeof(int) + Isize) * Max * Nsum;
+    int iend = (sizeof(int) + Isize * Max) * Nsum;
     int nend = 2 * sizeof(int) + Nsize * Nsum;
+    Nsum++;
     Info.seekp(iend, std::ios::beg);
     Info.write(reinterpret_cast<char*>(&size2), sizeof(int));
     Info.write(reinterpret_cast<char*>(&newblock), size2 * Isize);
@@ -398,7 +397,7 @@ public:
     Node.seekp(posN, std::ios::beg);
     Node.write(reinterpret_cast<char*>(&oldnode), Nsize);
     Node.seekp(nend, std::ios::beg);
-    Node.write(reinterpret_cast<char*>(&nend), Nsize);
+    Node.write(reinterpret_cast<char*>(&newnode), Nsize);
 
     Node.close();
     Info.close();
