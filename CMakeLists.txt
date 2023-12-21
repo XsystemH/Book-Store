@@ -9,4 +9,10 @@ include_directories(Bookstore)
 add_executable(Book_Store
         Bookstore/blockchain.h
         Bookstore/storetest.cpp
+        Bookstore/book.h
+        Bookstore/book.cpp
+        Bookstore/account.h
+        Bookstore/account.cpp
+        Bookstore/log.h
+        Bookstore/log.cpp
 )
