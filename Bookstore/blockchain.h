@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-const size_t Max = 150;
+const size_t Max = 512;
 
 template<class node, class info>
 class blockchain
@@ -98,29 +98,34 @@ public:
       std::string minn_str = tpr.minn;
       posN = Node.tellg();
       posN -= Nsize;
-      if (index > maxn_str && tpr.next == -1)
+      if (index > maxn_str)
       {
-        poss.push_back(std::make_pair(posN, tpr.pos));
+        if (tpr.next == -1) {
+          fir = false;
+          poss.push_back(std::make_pair(posN, tpr.pos));
+        }
       }
       else if (minn_str <= index && index < maxn_str)
       {
+        fir = false;
         poss.push_back(std::make_pair(posN, tpr.pos));
         break;
       }
       else if (fir && index < minn_str)
       {
+        fir = false;
         poss.push_back(std::make_pair(posN, tpr.pos));
         break;
       }
       else if (index == maxn_str)
       {
+        fir = false;
         poss.push_back(std::make_pair(posN, tpr.pos));
       }
 //      else if (index < minn_str)
 //      {
 //        break;
 //      }
-      fir = false;
       if (tpr.next != -1) {
         Node.seekg(tpr.next, std::ios::beg);
         Node.read(reinterpret_cast<char *>(&tpr), Nsize);
@@ -170,7 +175,7 @@ public:
           l = mid + 1;
         }
       } // while
-      if (r != size - 1 && size > 1) {
+      if (r != size - 1 && size >= 1) {
         Info.close();
         return false;
       }
@@ -198,6 +203,7 @@ public:
           vals.push_back(block[j].value);
         }
       }
+//      vals.push_back(-1);
       Info.close();
     }
     return vals;
