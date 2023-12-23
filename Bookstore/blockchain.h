@@ -186,9 +186,9 @@ public:
     return false;
   }
 
-  std::vector<std::string> findI(std::vector<std::pair<int, int>> &poss, std::string index)
+  std::vector<int> findI(std::vector<std::pair<int, int>> &poss, std::string index)
   {
-    std::vector<std::string> vals;
+    std::vector<int> vals;
     int size;
     info block[Max];
     for (int i = 0; i < poss.size(); i++)
@@ -202,8 +202,8 @@ public:
       {
         if(std::string(block[j].index) == index)
         {
-          std::string bstr = block[j].index;
-          vals.push_back(bstr);
+//          std::string bstr = block[j].index;
+          vals.push_back(block[j].pos);
         }
       }
 //      vals.push_back(-1);

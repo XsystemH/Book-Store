@@ -6,7 +6,7 @@ set(CMAKE_C_STANDARD 11)
 include_directories(.)
 include_directories(Bookstore)
 
-add_executable(Book_Store
+add_executable(code
         Bookstore/blockchain.h
         Bookstore/storetest.cpp
         Bookstore/book.h

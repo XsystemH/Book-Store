@@ -8,6 +8,7 @@
 #include "blockchain.h"
 #include <cstring>
 #include <fstream>
+#include <iomanip>
 
 class ISBN_node {
 public:
@@ -69,8 +70,8 @@ public:
 class Name_info {
 public:
 
-  char index[65]; // i.e Name
-  char value[21];  // i.e ISBN
+  char index[65]; // i.e. Name
+  char value[21]; // i.e. ISBN
   int pos; // i.e. the position in origin file
 
 public:
@@ -107,7 +108,7 @@ class Author_info {
 public:
 
   char index[65]; // i.e. Author
-  char value[21];  // i.e. ISBN
+  char value[21]; // i.e. ISBN
   int pos; // i.e. the position in origin file
 
 public:
@@ -162,12 +163,38 @@ public:
 // ---------------------------------------------------------------------
 
 class Book_Information {
+public:
+
   char ISBN[21];
   char BookName[65];
   char Keywords[65];
-  unsigned long long Quantity;
   double Price;
+  int Quantity; // Special Note: Values do not exceed 2'147'483'647
   double TotalCost;
+  // Book Information
+  // Storage Information
+  int pos; // the position on the bookshelf
+
+public:
+
+  Book_Information() = default;
+  Book_Information(std::string isbn) { // create a null book
+    strcpy(ISBN, isbn.c_str());
+    strcpy(BookName, "");
+    strcpy(Keywords, "");
+    Price = 0;
+    Quantity = 0;
+    TotalCost = 0;
+    pos = 0;
+  }
+  ~Book_Information() = default;
+
+  void Print() {
+// [ISBN]\t[BookName]\t[Author]\t[Keyword]\t[Price]\t[库存数量]\n
+    std::cout << ISBN << "\t" << BookName << "\t" << Keywords << "\t";
+    std::cout << std::fixed << std::setprecision(2) << Price << "\t";
+    std::cout << Quantity << '\n';
+  }
 };
 
 class BookShelf {
@@ -180,6 +207,8 @@ public:
 
   std::string selected; // the ISBN of the selected Book;
   std::fstream shelf; // linear struct
+  size_t BOOKSIZE;
+  int booksum;
 // the selected book's ISBN size - 21
 // followed by all the books' information
 // [ISBN]：Internal Strange Book Number；
@@ -209,6 +238,22 @@ public:
     Name_chain = new blockchain<Name_node, Name_info>("Name_node", "Name_info");
     Author_chain = new blockchain<Author_node, Author_info>("Author_node", "Author_info");
     Keyword_chain = new blockchain<Keyword_node, Keyword_info>("Keyword_node", "Ketword_info");
+    shelf.open("SHELF");
+    if (!shelf.good()) {
+      shelf.open("SHELF", std::ios::out | std::ios::binary);
+      shelf.close();
+      shelf.open("SHELF");
+      booksum = 0; // initialize
+      shelf.seekp(0, std::ios::beg);
+      shelf.write(reinterpret_cast<char*>(&booksum), sizeof(int));
+    }
+    else {
+      shelf.seekg(0, std::ios::beg);
+      shelf.read(reinterpret_cast<char*>(&booksum), sizeof(int));
+      // get information if file is created already
+    }
+    shelf.close(); // 创建文件
+    BOOKSIZE = sizeof(Book_Information);
   }
   ~BookShelf() {
     delete ISBN_chain;
@@ -217,7 +262,29 @@ public:
     delete Keyword_chain;
   }
 
-  void select(std::string isbn);
+  // std::vector<Book_Information>
+  void FindISBN(std::string isbn); // maybe void is better?
+  void FindName(std::string Aname);
+  void FindAuthor(std::string Aname);
+  void FIndKeyword(std::string Word);
+
+/**
+ * @brief insert a book
+ * @details Write information into SHELF
+ * and create index of all types pointing to pos.
+ * remember to record pos in book
+ * @param book the book need to be insert
+ */
+  void insertbook(Book_Information book);
+
+/**
+ * @brief change the information of a book
+ * @details Modify the information in its original position.
+ * Delete all existing indexes.
+ * Create new indexes.
+ */
+  void modify(Book_Information oldbook, Book_Information newbook);
+
 };
 
 #endif //CODE_BOOK_H
