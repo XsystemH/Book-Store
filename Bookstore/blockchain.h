@@ -162,10 +162,12 @@ public:
         mid = (l + r) / 2;
         std::string bstr = block[mid].index;
         std::string tstr = target.index;
-        if (tstr < bstr || (tstr == bstr && target.value <= block[mid].value)) {
+        std::string bval = block[mid].value;
+        std::string tval = target.value;
+        if (tstr < bstr || (tstr == bstr && tval <= bval)) {
           posI = mid;
           r = mid - 1;
-          if (tstr == bstr && target.value == block[mid].value) {
+          if (tstr == bstr && tval == bval) {
             Info.close();
             return true;
           }
@@ -184,9 +186,9 @@ public:
     return false;
   }
 
-  std::vector<int> findI(std::vector<std::pair<int, int>> &poss, std::string index)
+  std::vector<std::string> findI(std::vector<std::pair<int, int>> &poss, std::string index)
   {
-    std::vector<int> vals;
+    std::vector<std::string> vals;
     int size;
     info block[Max];
     for (int i = 0; i < poss.size(); i++)
@@ -200,7 +202,8 @@ public:
       {
         if(std::string(block[j].index) == index)
         {
-          vals.push_back(block[j].value);
+          std::string bstr = block[j].index;
+          vals.push_back(bstr);
         }
       }
 //      vals.push_back(-1);
