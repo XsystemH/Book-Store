@@ -25,6 +25,7 @@ private:
   std::string INFO;
   std::fstream Node;
   std::fstream Info;
+  bool emp = true;
 
 public:
 
@@ -50,6 +51,7 @@ public:
       Node.write(reinterpret_cast<char*>(&Nsum), sizeof(int));
     }
     else {
+      emp = true;
       Node.seekg(0, std::ios::beg);
       Node.read(reinterpret_cast<char*>(&head), sizeof(int)); // 读入已有head
       Node.seekg(sizeof(int), std::ios::beg);
@@ -75,6 +77,10 @@ public:
   }
 
   ~blockchain() = default;
+
+  bool empty() {
+    return emp;
+  }
 
   std::vector<int> findA() // find all the value
   {
@@ -313,6 +319,7 @@ public:
 
   void insert(int pos0, int posI, int posN, info target)
   {
+    emp = false;
     Node.open(NODE);
     Info.open(INFO);
     // moved

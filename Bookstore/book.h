@@ -40,7 +40,7 @@ public:
 
   void Print() {
 // [ISBN]\t[BookName]\t[Author]\t[Keyword]\t[Price]\t[库存数量]\n
-    std::cout << ISBN << "\t" << BookName << "\t" << Keywords << "\t";
+    std::cout << ISBN << "\t" << BookName << "\t" << AuthorName << "\t" << Keywords << "\t";
     std::cout << std::fixed << std::setprecision(2) << Price << "\t";
     std::cout << Quantity << '\n';
   }
@@ -323,6 +323,6 @@ public:
 
 };
 
-BookShelf BS;
+extern BookShelf BS;
 
 #endif //CODE_BOOK_H

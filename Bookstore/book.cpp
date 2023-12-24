@@ -103,11 +103,66 @@ void BookShelf::FIndKeyword(std::string &key) {
 }
 // above are functions related to finding a list of book
 void BookShelf::InsertBook(Book_Information &book) {
-
+  int sum;
+  BS.shelf.open("SHELF");
+  BS.shelf.seekg(0, std::ios::beg);
+  BS.shelf.read(reinterpret_cast<char*>(&sum), sizeof(int));
+  book.pos = sizeof(int) + sum * BOOKSIZE;
+  sum++;
+  BS.shelf.seekp(0, std::ios::beg);
+  BS.shelf.write(reinterpret_cast<char*>(&sum), sizeof(int));
+  BS.shelf.seekp(book.pos, std::ios::beg);
+  BS.shelf.write(reinterpret_cast<char*>(&book), BOOKSIZE);
+  BS.shelf.close();
+  ISBN_info isbn(book);
+  ISBN_chain->insert(isbn);
+  Name_info name(book);
+  Name_chain->insert(name);
+  Author_info author(book);
+  Author_chain->insert(author);
+  char keywords[65];
+  strcpy(keywords, book.Keywords);
+  char* key = strtok(keywords, "|");
+  while (key) {
+    Keyword_info kw(book, key);
+    Keyword_chain->insert(kw);
+    key = strtok(nullptr, "|");
+  }
 }
 void BookShelf::DeleteBook(Book_Information &book) {
-
+  ISBN_info isbn(book);
+  ISBN_chain->deleteI(isbn);
+  Name_info name(book);
+  Name_chain->deleteI(name);
+  Author_info author(book);
+  Author_chain->deleteI(author);
+  char keywords[65];
+  strcpy(keywords, book.Keywords);
+  char* key = strtok(keywords, "|");
+  while (key) {
+    Keyword_info kw(book, key);
+    Keyword_chain->deleteI(kw);
+    key = strtok(nullptr, "|");
+  }
 }
 void BookShelf::Modify(Book_Information &oldbook, Book_Information &newbook) {
-
+  DeleteBook(oldbook);
+  ISBN_info isbn(newbook);
+  ISBN_chain->insert(isbn);
+  Name_info name(newbook);
+  Name_chain->insert(name);
+  Author_info author(newbook);
+  Author_chain->insert(author);
+  char keywords[65];
+  strcpy(keywords, newbook.Keywords);
+  char* key = strtok(keywords, "|");
+  while (key) {
+    Keyword_info kw(newbook, key);
+    Keyword_chain->insert(kw);
+    key = strtok(nullptr, "|");
+  }
+  BS.shelf.open("SHELF");
+  BS.shelf.seekp(newbook.pos, std::ios::beg);
+  BS.shelf.write(reinterpret_cast<char*>(&newbook), BOOKSIZE);
+  BS.shelf.close(); // Override old to new
 }

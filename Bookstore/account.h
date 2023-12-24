@@ -47,7 +47,7 @@ public:
   }
 };
 
-blockchain<Account_node, Account_info> accounts("Account_NODE", "Account_INFO");
+extern blockchain<Account_node, Account_info> accounts;
 
 class User {
 public:
@@ -96,7 +96,7 @@ public:
 // below are functions about log management
 };
 
-std::vector<User> stack; // log_in stack
+extern std::vector<User> stack; // log_in stack
 // Each operation only operates on the user at the end of the queue.
 
 #endif //CODE_ACCOUNT_H

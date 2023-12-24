@@ -208,7 +208,7 @@ void User::modify(Book_Information &b) {
   if (!real) {
     // Check integrity and insert the book
     if (b.ISBN[0] == '\0' || b.BookName[0] == '\0' || b.AuthorName[0] == '\0'
-      || b.Keywords[0] == '\0' || b.Quantity == -1 || b.Price < 0 || b.TotalCost == -1) {
+      || b.Keywords[0] == '\0' || b.Price < 0) {
       // todo information isn't complete
       return;
     }
