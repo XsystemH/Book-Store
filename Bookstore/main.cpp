@@ -63,7 +63,7 @@ int main() {
       }
     }
     else if (cut[0] == "logout") {
-      if (cut.size() == 1) stack.pop_back();
+      if (cut.size() == 1 && stack.back().Privilege) stack.pop_back();
       else {
         std::cout << "Invalid\n";
         continue;
