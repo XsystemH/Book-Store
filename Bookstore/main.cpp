@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <cstring>
+#include "grammar.h"
 
 BookShelf BS;
 blockchain<Account_node, Account_info> accounts("Account_NODE", "Account_INFO");
@@ -26,7 +27,10 @@ int main() {
     accounts.insert(r);
   } // create root
   char cmd[1000];
+//  int test = 1;
   while (std::cin.getline(cmd, 1000)) {
+//    std::cout << test << ": ";
+//    test++;
     if (stack.empty()) {
       User visitor;
       visitor.Privilege = 0;
@@ -59,14 +63,23 @@ int main() {
       }
     }
     else if (cut[0] == "logout") {
-      stack.pop_back();
+      if (cut.size() == 1) stack.pop_back();
+      else {
+        std::cout << "Invalid\n";
+        continue;
+      }
     }
     else if (cut[0] == "register") {
       if (cut.size() != 4) {
         std::cout << "Invalid\n";
         continue;
       }
-      stack.back().rg(cut[1], cut[2], cut[3]);
+      if (checkNLU(cut[1]) && checkNLU(cut[2]))
+        stack.back().rg(cut[1], cut[2], cut[3]);
+      else {
+        std::cout << "Invalid\n";
+        continue;
+      }
     }
     else if (cut[0] == "passwd") {
       if (cut.size() < 3) {
@@ -74,10 +87,20 @@ int main() {
         continue;
       }
       else if (cut.size() == 3) {
-        stack.back().pw(cut[1], cut[2]);
+        if (checkNLU(cut[1]) && checkNLU(cut[2]))
+          stack.back().pw(cut[1], cut[2]);
+        else {
+          std::cout << "Invalid\n";
+          continue;
+        }
       }
       else if (cut.size() == 4) {
-        stack.back().pw(cut[1],cut[2],cut[3]);
+        if (checkNLU(cut[1]) && checkNLU(cut[2]) && checkNLU(cut[3]))
+          stack.back().pw(cut[1], cut[2], cut[3]);
+        else {
+          std::cout << "Invalid\n";
+          continue;
+        }
       }
     }
     else if (cut[0] == "useradd") {
@@ -90,7 +113,12 @@ int main() {
         continue;
       }
       int privilege = int(cut[3][0] - '0');
-      stack.back().ua(cut[1], cut[2], privilege, cut[4]);
+      if (checkNLU(cut[1]) && checkNLU(cut[2]))
+        stack.back().ua(cut[1], cut[2], privilege, cut[4]);
+      else {
+        std::cout << "Invalid\n";
+        continue;
+      }
     }
     else if (cut[0] == "delete") {
       if (cut.size() != 2) {

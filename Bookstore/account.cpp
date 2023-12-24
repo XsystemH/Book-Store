@@ -89,7 +89,7 @@ void User::pw(std::string &UID, std::string &NP) {
   accounts.insert(*result.begin());
 }
 void User::ua(std::string &UID, std::string &PW, int PV, std::string &UN) {
-  if (!Check(PV)) {
+  if (!Check(PV + 1)) {
     std::cout << "Invalid\n";
     return;
   }
