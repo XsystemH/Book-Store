@@ -10,6 +10,42 @@
 #include <fstream>
 #include <iomanip>
 
+class Book_Information {
+public:
+
+  char ISBN[21];
+  char BookName[65];
+  char AuthorName[65];
+  char Keywords[65];
+  double Price;
+  int Quantity; // Special Note: Values do not exceed 2'147'483'647
+  double TotalCost;
+  // Book Information
+  // Storage Information
+  int pos; // the position on the bookshelf
+
+public:
+
+  Book_Information() = default;
+  Book_Information(std::string isbn) { // create a null book
+    strcpy(ISBN, isbn.c_str());
+    strcpy(BookName, "");
+    strcpy(Keywords, "");
+    Price = -1;
+    Quantity = -1;
+    TotalCost = -1;
+    pos = -1;
+  }
+  ~Book_Information() = default;
+
+  void Print() {
+// [ISBN]\t[BookName]\t[Author]\t[Keyword]\t[Price]\t[库存数量]\n
+    std::cout << ISBN << "\t" << BookName << "\t" << Keywords << "\t";
+    std::cout << std::fixed << std::setprecision(2) << Price << "\t";
+    std::cout << Quantity << '\n';
+  }
+};
+
 class ISBN_node {
 public:
 
@@ -34,10 +70,16 @@ public:
 
   char index[21]; // i.e ISBN
   char value[21]; //still ISBN
-  char BookName[65]; // used when turning
   int pos; // i.e. the position in origin file
 
 public:
+
+  ISBN_info() = default;
+  ISBN_info(Book_Information &b) {
+    strcpy(index, b.ISBN);
+    strcpy(value, b.ISBN);
+    pos = b.pos;
+  }
 
   ISBN_info& operator=(const ISBN_info &b) {
     if (&b == this) return *this;
@@ -76,6 +118,13 @@ public:
 
 public:
 
+  Name_info() = default;
+  Name_info(Book_Information &b) {
+    strcpy(index, b.BookName);
+    strcpy(value, b.ISBN);
+    pos = b.pos;
+  }
+
   Name_info& operator=(const Name_info &b) {
     if (&b == this) return *this;
     strcpy(index, b.index);
@@ -112,6 +161,13 @@ public:
   int pos; // i.e. the position in origin file
 
 public:
+
+  Author_info() = default;
+  Author_info(Book_Information &b) {
+    strcpy(index, b.AuthorName);
+    strcpy(value, b.ISBN);
+    pos = b.pos;
+  }
 
   Author_info& operator=(const Author_info &b) {
     if (&b == this) return *this;
@@ -150,6 +206,13 @@ public:
 
 public:
 
+  Keyword_info() = default;
+  Keyword_info(Book_Information &b, std::string key) {
+    strcpy(index, key.c_str());
+    strcpy(value, b.ISBN);
+    pos = b.pos;
+  }
+
   Keyword_info& operator=(const Keyword_info &b) {
     if (&b == this) return *this;
     strcpy(index, b.index);
@@ -161,41 +224,6 @@ public:
 
 // that's all blockchain we need in manage books
 // ---------------------------------------------------------------------
-
-class Book_Information {
-public:
-
-  char ISBN[21];
-  char BookName[65];
-  char Keywords[65];
-  double Price;
-  int Quantity; // Special Note: Values do not exceed 2'147'483'647
-  double TotalCost;
-  // Book Information
-  // Storage Information
-  int pos; // the position on the bookshelf
-
-public:
-
-  Book_Information() = default;
-  Book_Information(std::string isbn) { // create a null book
-    strcpy(ISBN, isbn.c_str());
-    strcpy(BookName, "");
-    strcpy(Keywords, "");
-    Price = 0;
-    Quantity = 0;
-    TotalCost = 0;
-    pos = 0;
-  }
-  ~Book_Information() = default;
-
-  void Print() {
-// [ISBN]\t[BookName]\t[Author]\t[Keyword]\t[Price]\t[库存数量]\n
-    std::cout << ISBN << "\t" << BookName << "\t" << Keywords << "\t";
-    std::cout << std::fixed << std::setprecision(2) << Price << "\t";
-    std::cout << Quantity << '\n';
-  }
-};
 
 class BookShelf {
 public:
@@ -263,10 +291,11 @@ public:
   }
 
   // std::vector<Book_Information>
-  void FindISBN(std::string isbn); // maybe void is better?
-  void FindName(std::string Aname);
-  void FindAuthor(std::string Aname);
-  void FIndKeyword(std::string Word);
+  void FindAll();
+  void FindISBN(std::string &isbn); // maybe void is better?
+  void FindName(std::string &Aname);
+  void FindAuthor(std::string &Aname);
+  void FIndKeyword(std::string &Word);
 
 /**
  * @brief insert a book
@@ -275,16 +304,25 @@ public:
  * remember to record pos in book
  * @param book the book need to be insert
  */
-  void insertbook(Book_Information book);
-
+  void InsertBook(Book_Information &book);
+/**
+ * @brief delete a book
+ * @details delete information from SHELF
+ * and delete all types pointing to pos.
+ * remember to record pos in book
+ * @param book the book need to be delete
+ */
+  void DeleteBook(Book_Information &book);
 /**
  * @brief change the information of a book
  * @details Modify the information in its original position.
  * Delete all existing indexes.
  * Create new indexes.
  */
-  void modify(Book_Information oldbook, Book_Information newbook);
+  void Modify(Book_Information &oldbook, Book_Information &newbook);
 
 };
+
+BookShelf BS;
 
 #endif //CODE_BOOK_H

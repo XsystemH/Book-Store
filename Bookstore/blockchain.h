@@ -76,6 +76,49 @@ public:
 
   ~blockchain() = default;
 
+  std::vector<int> findA() // find all the value
+  {
+    Node.open(NODE);
+    std::vector<std::pair<int, int>> poss;
+    node tpr;
+    int hp;
+    int posN;
+    Node.seekg(0, std::ios::beg);
+    Node.read(reinterpret_cast<char*>(&hp), sizeof(int));
+    Node.seekg(2 * sizeof(int) + hp * Nsize, std::ios::beg);
+    Node.read(reinterpret_cast<char*>(&tpr), Nsize);
+    do
+    {
+      std::string maxn_str = tpr.maxn;
+      std::string minn_str = tpr.minn;
+      posN = Node.tellg();
+      posN -= Nsize;
+      poss.push_back(std::make_pair(posN, tpr.pos));
+      if (tpr.next != -1) {
+        Node.seekg(tpr.next, std::ios::beg);
+        Node.read(reinterpret_cast<char *>(&tpr), Nsize);
+      }
+    }while (tpr.next != -1);
+    Node.close();
+
+    std::vector<int> vals;
+    int size;
+    info block[Max];
+    Info.open(INFO);
+    for (int i = 0; i < poss.size(); i++)
+    {
+      Info.seekg(poss[i].second, std::ios::beg);
+      Info.read(reinterpret_cast<char*>(&size), sizeof(int));
+      Info.read(reinterpret_cast<char*>(&block), Isize * size);
+      for(int j = 0; j < size; j++)
+      {
+        vals.push_back(block[j].pos);
+      }
+    }
+    Info.close();
+    return vals;
+  }
+
   std::vector<std::pair<int, int>> findN(std::string index) // 感觉没问题
   {
     Node.open(NODE);

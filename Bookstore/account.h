@@ -8,6 +8,7 @@
 #include <cstring>
 #include "blockchain.h"
 #include "book.h"
+#include "log.h"
 
 class Account_node {
 public:
@@ -58,6 +59,8 @@ public:
   std::string Password;
 
   std::string selected; // the ISBN of the selected book
+  Book_Information theBook;
+  bool real; // whether the book's information is completed
 
 public:
 
@@ -69,17 +72,31 @@ public:
     Password = b.Password;
   }
 
-  bool Check(int need); // 检查是否符合权限要求
-  void su(std::string UID, std::string PW);
-  void su(std::string UID); // specialized for Upper User
-  void lo(std::string UID); // log out
-  void rg(std::string UID, std::string PW, std::string UN); // register
-  void pw(std::string UID, std::string CP, std::string NP); // passwd
-  void pw(std::string UID, std::string NP); // Upper User
-  void ua(std::string UID, std::string PW, int PV, std::string UN); // user add
-  void de(std::string UID); // delete
+  bool Check(int need); // Check if it meets the permission requirements.
+  void su(std::string &UID, std::string &PW);
+  void su(std::string &UID); // specialized for Upper User
+  void lo(std::string &UID); // log out
+  void rg(std::string &UID, std::string &PW, std::string &UN); // register
+  void pw(std::string &UID, std::string &CP, std::string &NP); // passwd
+  void pw(std::string &UID, std::string &NP); // Upper User
+  void ua(std::string &UID, std::string &PW, int PV, std::string &UN); // user add
+  void de(std::string &UID); // delete
+// above are functions about accounts management
+// below are functions about bookshelf management
+  void show();
+  void showISBN(std::string &isbn);
+  void showBookName(std::string &bookname);
+  void showAuthor(std::string &authorname);
+  void showKeyword(std::string &key);
+  void buy(std::string &ISBN, int quan);
+  void select(std::string &isbn);
+  void modify(Book_Information &b);
+  void import(std::string &quan, double totalcost);
+// above are functions about bookshelf management
+// below are functions about log management
 };
 
 std::vector<User> stack; // log_in stack
+// Each operation only operates on the user at the end of the queue.
 
 #endif //CODE_ACCOUNT_H

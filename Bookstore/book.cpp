@@ -18,7 +18,18 @@
 //}
 // useless because we don't need to modify name and ISBN
 
-void BookShelf::FindISBN(std::string isbn) {
+void BookShelf::FindAll() {
+  std::vector<int> pos = ISBN_chain->findA();
+  shelf.open("SHELF");
+  for (int p : pos) {
+    shelf.seekg(p, std::ios::beg);
+    Book_Information book;
+    shelf.read(reinterpret_cast<char*>(&book), BOOKSIZE);
+    book.Print();
+  }
+  shelf.close();
+}
+void BookShelf::FindISBN(std::string &isbn) {
   std::vector<std::pair<int, int>> poss = ISBN_chain->findN(isbn);
   std::vector<int> pos = ISBN_chain->findI(poss, isbn);
   for (int p : pos) {
@@ -31,13 +42,13 @@ void BookShelf::FindISBN(std::string isbn) {
   }
 } // Sort and output in ascending order by ISBN, no need for sorting.
 
-bool cmp(Book_Information a, Book_Information b) {
+bool cmp(Book_Information &a, Book_Information &b) {
   std::string astr = a.ISBN;
   std::string bstr = b.ISBN;
   return astr < bstr;
 }
 
-void BookShelf::FindName(std::string name) {
+void BookShelf::FindName(std::string &name) {
   std::vector<std::pair<int, int>> poss = Name_chain->findN(name);
   std::vector<int> pos = Name_chain->findI(poss, name);
   std::vector<Book_Information> list;
@@ -55,7 +66,7 @@ void BookShelf::FindName(std::string name) {
   }
 }
 
-void BookShelf::FindAuthor(std::string name) {
+void BookShelf::FindAuthor(std::string &name) {
   std::vector<std::pair<int, int>> poss = Author_chain->findN(name);
   std::vector<int> pos = Author_chain->findI(poss, name);
   std::vector<Book_Information> list;
@@ -73,7 +84,7 @@ void BookShelf::FindAuthor(std::string name) {
   }
 }
 
-void BookShelf::FIndKeyword(std::string key) {
+void BookShelf::FIndKeyword(std::string &key) {
   std::vector<std::pair<int, int>> poss = Keyword_chain->findN(key);
   std::vector<int> pos = Keyword_chain->findI(poss, key);
   std::vector<Book_Information> list;
@@ -91,7 +102,12 @@ void BookShelf::FIndKeyword(std::string key) {
   }
 }
 // above are functions related to finding a list of book
+void BookShelf::InsertBook(Book_Information &book) {
 
-void BookShelf::insertbook(Book_Information book) {
+}
+void BookShelf::DeleteBook(Book_Information &book) {
+
+}
+void BookShelf::Modify(Book_Information &oldbook, Book_Information &newbook) {
 
 }
