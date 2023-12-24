@@ -265,7 +265,7 @@ public:
     ISBN_chain = new blockchain<ISBN_node, ISBN_info>("ISBN_node", "ISBN_info");
     Name_chain = new blockchain<Name_node, Name_info>("Name_node", "Name_info");
     Author_chain = new blockchain<Author_node, Author_info>("Author_node", "Author_info");
-    Keyword_chain = new blockchain<Keyword_node, Keyword_info>("Keyword_node", "Ketword_info");
+    Keyword_chain = new blockchain<Keyword_node, Keyword_info>("Keyword_node", "Keyword_info");
     shelf.open("SHELF");
     if (!shelf.good()) {
       shelf.open("SHELF", std::ios::out | std::ios::binary);

@@ -91,7 +91,7 @@ public:
   void buy(std::string &ISBN, int quan);
   void select(std::string &isbn);
   void modify(Book_Information &b);
-  void import(std::string &quan, double totalcost);
+  void import(int quan, double totalcost);
 // above are functions about bookshelf management
 // below are functions about log management
 };

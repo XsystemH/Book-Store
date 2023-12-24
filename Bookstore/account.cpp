@@ -11,7 +11,7 @@ void User::su(std::string &UID, std::string &PW) {
   std::vector<Account_info> result = accounts.find(UID);
   if (result.empty())
   {
-    // todo error
+    std::cout << "Invalid\n";
     return;
   }
   User ready(*result.begin());
@@ -19,7 +19,7 @@ void User::su(std::string &UID, std::string &PW) {
     stack.push_back(ready);
   }
   else {
-    // todo error
+    std::cout << "Invalid\n";
     return;
   }
 }
@@ -27,7 +27,7 @@ void User::su(std::string &UID) {
   std::vector<Account_info> result = accounts.find(UID);
   if (result.empty())
   {
-    // todo error
+    std::cout << "Invalid\n";
     return;
   }
   if (Check(result.begin()->pos)) {
@@ -35,13 +35,13 @@ void User::su(std::string &UID) {
     stack.push_back(ready);
   }
   else {
-    // todo error
+    std::cout << "Invalid\n";
     return;
   }
 }
 void User::lo(std::string &UID) {
   if (stack.empty()) {
-    // todo error
+    std::cout << "Invalid\n";
     return;
   }
   stack.pop_back(); // Pop out the last element in the login stack.
@@ -50,7 +50,7 @@ void User::rg(std::string &UID, std::string &PW, std::string &UN) {
   // add user in the file
   // need privilege: 0
   if (!accounts.find(UID).empty()) {
-    // todo error
+    std::cout << "Invalid\n";
     return;
   }
   Account_info new_user;
@@ -63,11 +63,11 @@ void User::rg(std::string &UID, std::string &PW, std::string &UN) {
 void User::pw(std::string &UID, std::string &CP, std::string &NP) {
   std::vector<Account_info> result = accounts.find(UID);
   if (result.empty()) {
-    // todo error
+    std::cout << "Invalid\n";
     return;
   }
   if (std::string(result.begin()->Password) != CP) {
-    // todo wrong password
+    std::cout << "Invalid\n";
     return;
   }
   accounts.deleteI(*result.begin());
@@ -77,11 +77,11 @@ void User::pw(std::string &UID, std::string &CP, std::string &NP) {
 void User::pw(std::string &UID, std::string &NP) {
   std::vector<Account_info> result = accounts.find(UID);
   if (result.empty()) {
-    // todo error
+    std::cout << "Invalid\n";
     return;
   }
   if (!Check(7)) {
-    // todo privilege 7 is required
+    std::cout << "Invalid\n";
     return;
   }
   accounts.deleteI(*result.begin());
@@ -90,11 +90,11 @@ void User::pw(std::string &UID, std::string &NP) {
 }
 void User::ua(std::string &UID, std::string &PW, int PV, std::string &UN) {
   if (!Check(PV)) {
-    // todo higher privilege is required
+    std::cout << "Invalid\n";
     return;
   }
   if (!accounts.find(UID).empty()) {
-    // todo user exists already
+    std::cout << "Invalid\n";
     return;
   }
   Account_info new_user;
@@ -106,17 +106,17 @@ void User::ua(std::string &UID, std::string &PW, int PV, std::string &UN) {
 }
 void User::de(std::string &UID) {
   if (!Check(7)) {
-    // todo need privilege 7
+    std::cout << "Invalid\n";
     return;
   }
   std::vector<Account_info> result = accounts.find(UID);
   if (result.empty()) {
-    // todo null
+    std::cout << "Invalid\n";
     return;
   }
   for (User t : stack) {
     if (t.UserID == UID) {
-      // todo in stack
+      std::cout << "Invalid\n";
       return;
     }
   }
@@ -126,42 +126,42 @@ void User::de(std::string &UID) {
 // below are functions about bookshelf management
 void User::show() {
   if (!Check(1)) {
-    // todo need higher privilege
+    std::cout << "Invalid\n";
     return;
   }
   BS.FindAll();
 }
 void User::showISBN(std::string &isbn) {
   if (!Check(1)) {
-    // todo need higher privilege
+    std::cout << "Invalid\n";
     return;
   }
   BS.FindISBN(isbn);
 }
 void User::showBookName(std::string &bookname) {
   if (!Check(1)) {
-    // todo need higher privilege
+    std::cout << "Invalid\n";
     return;
   }
   BS.FindName(bookname);
 }
 void User::showAuthor(std::string &authorname) {
   if (!Check(1)) {
-    // todo need higher privilege
+    std::cout << "Invalid\n";
     return;
   }
   BS.FindAuthor(authorname);
 }
 void User::showKeyword(std::string &key) {
   if (!Check(1)) {
-    // todo need higher privilege
+    std::cout << "Invalid\n";
     return;
   }
   BS.FIndKeyword(key);
 }
 void User::buy(std::string &ISBN, int quan) {
   if (!Check(1)) {
-    // todo need higher privilege
+    std::cout << "Invalid\n";
     return;
   }
   std::vector<ISBN_info> result = BS.ISBN_chain->find(ISBN);
@@ -171,7 +171,7 @@ void User::buy(std::string &ISBN, int quan) {
   BS.shelf.read(reinterpret_cast<char*>(&book), sizeof(Book_Information));
   BS.shelf.close();
   if (book.Quantity < quan) {
-    // todo Book is not enough
+    std::cout << "Invalid\n";
     return;
   }
   book.Quantity -= quan;
@@ -183,7 +183,7 @@ void User::buy(std::string &ISBN, int quan) {
 }
 void User::select(std::string &isbn) {
   if (!Check(3)) {
-    // todo higher privilege is required
+    std::cout << "Invalid\n";
     return;
   }
   selected = isbn;
@@ -202,14 +202,14 @@ void User::select(std::string &isbn) {
 }
 void User::modify(Book_Information &b) {
   if (!Check(3)) {
-    // todo higher privilege is required
+    std::cout << "Invalid\n";
     return;
   }
   if (!real) {
     // Check integrity and insert the book
     if (b.ISBN[0] == '\0' || b.BookName[0] == '\0' || b.AuthorName[0] == '\0'
       || b.Keywords[0] == '\0' || b.Price < 0) {
-      // todo information isn't complete
+      std::cout << "Invalid\n";
       return;
     }
     BS.InsertBook(b);
@@ -226,29 +226,20 @@ void User::modify(Book_Information &b) {
   // Filter out information that does not require replacement.
   BS.Modify(theBook, b);
 }
-void User::import(std::string &quan, double totalcost) {
+void User::import(int quan, double totalcost) {
   if (!Check(3)) {
-    // todo
+    std::cout << "Invalid\n";
     return;
   }
   if (selected == "") {
-    // todo
+    std::cout << "Invalid\n";
     return;
   }
   if (!real) {
-    // todo
+    std::cout << "Invalid\n";
     return;
   }
-  int q = 0;
-  for (char c : quan) {
-    if (c == '-' || c == '.') {
-      // not an int number
-      return;
-    }
-    q *= 10;
-    q += int(c - '0');
-  }
-  theBook.Quantity -= q;
+  theBook.Quantity -= quan;
   BS.shelf.open("SHELF");
   BS.shelf.seekp(theBook.pos, std::ios::beg);
   BS.shelf.write(reinterpret_cast<char*>(&theBook), sizeof(Book_Information));

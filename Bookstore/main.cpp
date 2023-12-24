@@ -32,7 +32,7 @@ int main() {
       visitor.Privilege = 0;
       stack.push_back(visitor);
     }
-    std::cout << stack.back().UserID << " " << stack.back().Privilege << std::endl;
+//    std::cout << stack.back().UserID << " !" << stack.back().Privilege << std::endl;
     char ignore[] = " ";
     char* tmp = strtok(cmd, ignore);
     std::vector<std::string> cut;
@@ -44,7 +44,7 @@ int main() {
     } // Slice cmd
     if (cut[0] == "su") {
       if (cut.size() < 2) {
-        // invalid
+        std::cout << "Invalid\n";
         continue;
       }
       else if (cut.size() == 2) {
@@ -54,7 +54,7 @@ int main() {
         stack.back().su(cut[1], cut[2]);
       }
       else {
-        // invalid
+        std::cout << "Invalid\n";
         continue;
       }
     }
@@ -63,14 +63,14 @@ int main() {
     }
     else if (cut[0] == "register") {
       if (cut.size() != 4) {
-        // invalid
+        std::cout << "Invalid\n";
         continue;
       }
       stack.back().rg(cut[1], cut[2], cut[3]);
     }
     else if (cut[0] == "passwd") {
       if (cut.size() < 3) {
-        // invalid
+        std::cout << "Invalid\n";
         continue;
       }
       else if (cut.size() == 3) {
@@ -82,11 +82,11 @@ int main() {
     }
     else if (cut[0] == "useradd") {
       if (cut.size() != 5) {
-        // invalid
+        std::cout << "Invalid\n";
         continue;
       }
       if (cut[3].length() > 1) {
-        // invalid privilege
+        std::cout << "Invalid\n";
         continue;
       }
       int privilege = int(cut[3][0] - '0');
@@ -94,7 +94,7 @@ int main() {
     }
     else if (cut[0] == "delete") {
       if (cut.size() != 2) {
-        // invalid
+        std::cout << "Invalid\n";
         continue;
       }
       stack.back().de(cut[1]);
@@ -124,35 +124,35 @@ int main() {
           stack.back().showISBN(key);
         }
         else {
-          // invalid
+          std::cout << "Invalid\n";
           continue;
         }
       } // if show book
     } // if show
     else if (cut[0] == "buy") {
       if (cut.size() != 3) {
-        // invalid
+        std::cout << "Invalid\n";
         continue;
       }
       int q = 0;
       bool isint = true;
       for(char c : cut[2]) {
         if (c == '.') {
-          // invalid
+          std::cout << "Invalid\n";
           isint = false;
         }
         q *= 10;
         q += int(c - '0');
       }
       if (!isint) {
-        // invalid
+        std::cout << "Invalid\n";
         continue;
       }
       stack.back().buy(cut[1], q);
     }
     else if (cut[0] == "select") {
       if (cut.size() != 2) {
-        // invalid
+        std::cout << "Invalid\n";
         continue;
       }
       stack.back().select(cut[1]);
@@ -181,13 +181,13 @@ int main() {
             std::string p = cut[i].substr(7, cut[i].length() - 2);
             change.Price = std::stod(p);
           } catch (std::invalid_argument &error) {
-            // todo
+            std::cout << "Invalid\n";
           } catch (std::out_of_range &error) {
-            // todo
+            std::cout << "Invalid\n";
           }
         }
         else {
-          // invalid
+          std::cout << "Invalid\n";
           continue;
         }
       }
@@ -197,7 +197,19 @@ int main() {
       stack.back().modify(change);
     }
     else if (cut[0] == "import") {
-
+      if (cut.size() != 3) {
+        std::cout << "Invalid\n";
+        continue;
+      }
+      try {
+        int q = std::stoi(cut[1]);
+        double total = std::stod(cut[2]);
+        stack.back().import(q, total);
+      } catch (std::invalid_argument &e) {
+        std::cout << "Invalid\n";
+      } catch (std::out_of_range &e) {
+        std::cout << "Invalid\n";
+      }
     }
     else if (cut[0] == "log") {
       // todo
@@ -207,6 +219,9 @@ int main() {
     }
     else if (cut[0] == "quit" || cut[0] == "exit") {
       break;
+    }
+    else {
+      std::cout << "Invalid\n";
     }
   }
   return 0;
