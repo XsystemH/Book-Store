@@ -331,7 +331,7 @@ public:
       node newnode;
       newnode.pos = 0;
       newnode.next = -1;
-      newnode.last = -1;
+//      newnode.last = -1; didn't use
       strcpy(newnode.maxn, target.index);
       strcpy(newnode.minn, target.index);
       Node.seekp(2*sizeof(int), std::ios::beg);
@@ -410,6 +410,29 @@ public:
 
     Node.close();
     Info.close();
+  }
+
+  std::vector<info> find(std::string index) {
+    std::vector<std::pair<int, int>> poss = findN(index);
+    std::vector<info> vals;
+    int size;
+    info block[Max];
+    for (int i = 0; i < poss.size(); i++)
+    {
+      Info.open(INFO);
+      Info.seekg(poss[i].second, std::ios::beg);
+      Info.read(reinterpret_cast<char*>(&size), sizeof(int));
+      Info.read(reinterpret_cast<char*>(&block), Isize * size);
+      for(int j = 0; j < size; j++)
+      {
+        if(std::string(block[j].index) == index)
+        {
+          vals.push_back(block[j]);
+        }
+      }
+      Info.close();
+    }
+    return vals;
   }
 };
 

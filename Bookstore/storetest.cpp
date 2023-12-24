@@ -32,6 +32,7 @@ class info
 public:
   char index[65]{};
   int value;
+  int pos;
 public:
   info() = default;
   info(std::string i, int v)
