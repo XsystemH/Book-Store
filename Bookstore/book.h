@@ -43,7 +43,8 @@ public:
   void Print() {
 // [ISBN]\t[BookName]\t[Author]\t[Keyword]\t[Price]\t[库存数量]\n
     std::cout << ISBN << "\t" << BookName << "\t" << AuthorName << "\t" << Keywords << "\t";
-    std::cout << std::fixed << std::setprecision(2) << Price << "\t";
+    if (Price > 0) std::cout << std::fixed << std::setprecision(2) << Price << "\t";
+    else std::cout << "0.00\t";
     std::cout << Quantity << '\n';
   }
 };
