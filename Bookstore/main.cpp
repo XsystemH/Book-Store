@@ -44,7 +44,6 @@ int main() {
       visitor.Privilege = 0;
       stack.push_back(visitor);
     }
-//    std::cout << stack.back().UserID << " !" << stack.back().Privilege << std::endl;
     char ignore[] = " ";
     char* tmp = strtok(cmd, ignore);
     std::vector<std::string> cut;
@@ -76,6 +75,22 @@ int main() {
         std::cout << "Invalid\n";
         continue;
       }
+      if (stack.back().selected != "") {
+        std::vector<ISBN_info> result = BS.ISBN_chain->find(stack.back().selected);
+        if (result.empty()) {
+          stack.back().real = true;
+          stack.back().theBook = Book_Information(stack.back().selected);
+          BS.InsertBook(stack.back().theBook);
+        }
+        else {
+          stack.back().real = true;
+          BS.shelf.open("SHELF");
+          BS.shelf.seekg(result.begin()->pos, std::ios::beg);
+          BS.shelf.read(reinterpret_cast<char*>(&stack.back().theBook), sizeof(Book_Information));
+          BS.shelf.close();
+//    theBook.Print();
+        }
+      } // renew the book when log out
     }
     else if (cut[0] == "register") {
       if (cut.size() != 4) {
@@ -140,6 +155,7 @@ int main() {
         stack.back().show();
       }
       else if (cut[1] == "finance") {
+        if (stack.back().Check(7))
         if (cut.size() == 2) {
           flog.show();
         }

@@ -180,11 +180,12 @@ void User::buy(std::string &ISBN, int quan) {
   }
   book.Quantity -= quan;
   // todo log
-  flog.recordin(quan * book.Price);
   if (book.Price < 0) {
+    flog.recordin(0.00);
     std::cout << "0.00\n";
   }
   else {
+    flog.recordin(quan * book.Price);
     std::cout << std::fixed << std::setprecision(2) << quan * book.Price << "\n";
   }
   BS.shelf.open("SHELF");
