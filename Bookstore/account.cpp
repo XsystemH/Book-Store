@@ -181,7 +181,12 @@ void User::buy(std::string &ISBN, int quan) {
   book.Quantity -= quan;
   // todo log
   flog.recordin(quan * book.Price);
-  std::cout << std::fixed << std::setprecision(2) << quan * book.Price << "\n";
+  if (book.Price < 0) {
+    std::cout << "0.00\n";
+  }
+  else {
+    std::cout << std::fixed << std::setprecision(2) << quan * book.Price << "\n";
+  }
   BS.shelf.open("SHELF");
   BS.shelf.seekp(result.begin()->pos, std::ios::beg);
   BS.shelf.write(reinterpret_cast<char*>(&book), sizeof(Book_Information));
