@@ -12,6 +12,7 @@
 BookShelf BS;
 blockchain<Account_node, Account_info> accounts("Account_NODE", "Account_INFO");
 std::vector<User> stack;
+financial flog;
 
 int main() {
   if (accounts.empty()) {
@@ -132,7 +133,22 @@ int main() {
         stack.back().show();
       }
       else if (cut[1] == "finance") {
-        // todo
+        if (cut.size() == 2) {
+          flog.show();
+        }
+        else if (cut.size() == 3) {
+          try {
+            int c = std::stoi(cut[2]);
+            flog.show(c);
+          } catch(...) {
+            std::cout << "Invalid\n";
+            continue;
+          }
+        }
+        else {
+          std::cout << "Invalid\n";
+          continue;
+        }
       }
       else {
         if (cut[1][1] == 'I') {
