@@ -6,6 +6,7 @@
 #define CODE_BOOK_H
 
 #include "blockchain.h"
+#include "error.h"
 #include <cstring>
 #include <fstream>
 #include <iomanip>

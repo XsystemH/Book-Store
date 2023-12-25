@@ -60,7 +60,7 @@ public:
 
   std::string selected; // the ISBN of the selected book
   Book_Information theBook;
-  bool real; // whether the book's information is completed
+  bool real = false; // whether the book's information is completed
 
 public:
 

@@ -15,4 +15,5 @@ add_executable(code
         Bookstore/log.h
         Bookstore/log.cpp
         Bookstore/main.cpp
+        Bookstore/error.h
 )

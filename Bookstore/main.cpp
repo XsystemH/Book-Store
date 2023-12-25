@@ -202,6 +202,10 @@ int main() {
       stack.back().select(cut[1]);
     }
     else if (cut[0] == "modify") {
+      if (stack.back().selected == "") {
+        std::cout << "Invalid\n";
+        continue;
+      }
       Book_Information change(stack.back().selected);
       try {
         for (int i = 1; i < cut.size(); i++) {
@@ -212,7 +216,7 @@ int main() {
               throw "";
             }
             if (!BS.ISBN_chain->find(isbn).empty()) {
-              throw "";
+              throw error();
             }
             strcpy(change.ISBN, isbn.c_str());
             stack.back().selected = isbn;
@@ -236,7 +240,7 @@ int main() {
             }
           } else {
             std::cout << "Invalid\n";
-            throw "";
+            throw error();
           }
         }
       } catch (...) {

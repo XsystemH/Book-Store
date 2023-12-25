@@ -191,11 +191,10 @@ void User::select(std::string &isbn) {
   selected = isbn;
   std::vector<ISBN_info> result = BS.ISBN_chain->find(isbn);
   if (result.empty()) {
-    real = false;
     theBook = Book_Information(isbn);
+    BS.InsertBook(theBook);
   }
   else {
-    real = true;
     BS.shelf.open("SHELF");
     BS.shelf.seekg(result.begin()->pos, std::ios::beg);
     BS.shelf.read(reinterpret_cast<char*>(&theBook), sizeof(Book_Information));

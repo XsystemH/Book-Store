@@ -165,7 +165,7 @@ void BookShelf::Modify(Book_Information &oldbook, Book_Information &newbook) {
   std::set<std::string> s;
   while (key) {
     if (s.find(std::string(key)) != s.end()) {
-      throw "";
+      throw error();
     }
     s.emplace(key);
     Keyword_info kw(newbook, key);
