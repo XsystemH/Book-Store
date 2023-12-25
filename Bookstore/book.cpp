@@ -3,6 +3,7 @@
 //
 #include "book.h"
 #include <algorithm>
+#include <set>
 
 //ISBN_info NametoISBN(const Name_info &b) {
 //  ISBN_info a;
@@ -161,7 +162,12 @@ void BookShelf::Modify(Book_Information &oldbook, Book_Information &newbook) {
   char keywords[65];
   strcpy(keywords, newbook.Keywords);
   char* key = strtok(keywords, "|");
+  std::set<std::string> s;
   while (key) {
+    if (s.find(std::string(key)) != s.end()) {
+      throw "";
+    }
+    s.emplace(key);
     Keyword_info kw(newbook, key);
     Keyword_chain->insert(kw);
     key = strtok(nullptr, "|");

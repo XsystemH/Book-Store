@@ -236,7 +236,12 @@ void User::modify(Book_Information &b) {
   if (b.Price < 0) b.Price = theBook.Price;
   if (b.TotalCost < 0) b.TotalCost = theBook.TotalCost;
   // Filter out information that does not require replacement.
-  BS.Modify(theBook, b);
+  try {
+    BS.Modify(theBook, b);
+  } catch (...) {
+    std::cout << "Invalid\n";
+    return;
+  }
   theBook = b;
 }
 void User::import(int quan, double totalcost) {

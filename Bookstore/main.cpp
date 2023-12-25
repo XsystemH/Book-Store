@@ -209,7 +209,10 @@ int main() {
             std::string isbn = cut[1].substr(6);
             if (isbn == stack.back().selected) {
               std::cout << "Invalid\n";
-              throw;
+              throw "";
+            }
+            if (!BS.ISBN_chain->find(isbn).empty()) {
+              throw "";
             }
             strcpy(change.ISBN, isbn.c_str());
             stack.back().selected = isbn;
@@ -233,7 +236,7 @@ int main() {
             }
           } else {
             std::cout << "Invalid\n";
-            throw;
+            throw "";
           }
         }
       } catch (...) {
