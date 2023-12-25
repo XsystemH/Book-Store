@@ -155,7 +155,10 @@ int main() {
         stack.back().show();
       }
       else if (cut[1] == "finance") {
-        if (stack.back().Check(7))
+        if (!stack.back().Check(7)) {
+          std::cout << "Invalid\n";
+          continue;
+        }
         if (cut.size() == 2) {
           flog.show();
         }
