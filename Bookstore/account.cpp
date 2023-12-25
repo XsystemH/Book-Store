@@ -191,10 +191,12 @@ void User::select(std::string &isbn) {
   selected = isbn;
   std::vector<ISBN_info> result = BS.ISBN_chain->find(isbn);
   if (result.empty()) {
+    real = true;
     theBook = Book_Information(isbn);
     BS.InsertBook(theBook);
   }
   else {
+    real = true;
     BS.shelf.open("SHELF");
     BS.shelf.seekg(result.begin()->pos, std::ios::beg);
     BS.shelf.read(reinterpret_cast<char*>(&theBook), sizeof(Book_Information));
@@ -204,26 +206,6 @@ void User::select(std::string &isbn) {
 void User::modify(Book_Information &b) {
   if (!Check(3)) {
     std::cout << "Invalid\n";
-    return;
-  }
-  if (!real) {
-    // Check integrity and insert the book
-//    if ((b.ISBN[0] == '\0' && theBook.ISBN[0] == '0') || (b.BookName[0] == '\0' && theBook.BookName[0] == '\0')
-//      || (b.AuthorName[0] == '\0' && theBook.AuthorName[0] == '\0') || (b.Keywords[0] == '\0' && b.Keywords[0] == '\0')
-//      || (b.Price < 0 && theBook.Price < 0)) {
-////      std::cout << "Invalid\n";
-//      if (b.ISBN[0] != '\0') strcpy(theBook.ISBN, b.ISBN);
-//      if (b.BookName[0] != '\0') strcpy(theBook.BookName, b.BookName);
-//      if (b.AuthorName[0] != '\0') strcpy(theBook.AuthorName, b.AuthorName);
-//      if (b.Keywords[0] != '\0') strcpy(theBook.Keywords, b.Keywords);
-//      if (b.Quantity != -1) b.Quantity = theBook.Quantity;
-//      if (b.Price >= 0) theBook.Price = b.Price;
-//      if (b.TotalCost != -1) theBook.TotalCost = b.TotalCost;
-//      return;
-//    }
-    real = true;
-    BS.InsertBook(b);
-    theBook = b;
     return;
   }
   if (b.ISBN[0] == '\0') strcpy(b.ISBN, theBook.ISBN);
