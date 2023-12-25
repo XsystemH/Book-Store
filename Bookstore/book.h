@@ -32,7 +32,7 @@ public:
     strcpy(BookName, "");
     strcpy(Keywords, "");
     Price = -1;
-    Quantity = -1;
+    Quantity = 0;
     TotalCost = -1;
     pos = -1;
   }

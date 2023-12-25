@@ -27,6 +27,7 @@ void BookShelf::FindAll() {
     shelf.read(reinterpret_cast<char*>(&book), BOOKSIZE);
     book.Print();
   }
+  if (pos.empty()) std::cout << "\n";
   shelf.close();
 }
 void BookShelf::FindISBN(std::string &isbn) {
@@ -40,6 +41,7 @@ void BookShelf::FindISBN(std::string &isbn) {
     shelf.close();
     book.Print();
   }
+  if (pos.empty()) std::cout << "\n";
 } // Sort and output in ascending order by ISBN, no need for sorting.
 
 bool cmp(Book_Information &a, Book_Information &b) {
@@ -64,6 +66,7 @@ void BookShelf::FindName(std::string &name) {
   for (Book_Information b : list) {
     b.Print();
   }
+  if (pos.empty()) std::cout << "\n";
 }
 
 void BookShelf::FindAuthor(std::string &name) {
@@ -82,6 +85,7 @@ void BookShelf::FindAuthor(std::string &name) {
   for (Book_Information b : list) {
     b.Print();
   }
+  if (list.empty()) std::cout << "\n";
 }
 
 void BookShelf::FIndKeyword(std::string &key) {
@@ -100,6 +104,7 @@ void BookShelf::FIndKeyword(std::string &key) {
   for (Book_Information b : list) {
     b.Print();
   }
+  if (list.empty()) std::cout << "\n";
 }
 // above are functions related to finding a list of book
 void BookShelf::InsertBook(Book_Information &book) {

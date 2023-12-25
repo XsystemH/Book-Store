@@ -140,15 +140,15 @@ int main() {
           stack.back().showISBN(isbn);
         }
         else if (cut[1][1] == 'n') {
-          std::string name = cut[1].substr(7,cut[1].length() - 3);
+          std::string name = cut[1].substr(7,cut[1].length() - 9);
           stack.back().showBookName(name);
         }
         else if (cut[1][1] == 'a') {
-          std::string Aname = cut[1].substr(9,cut[1].length() - 3);
+          std::string Aname = cut[1].substr(9,cut[1].length() - 11);
           stack.back().showAuthor(Aname);
         }
         else if (cut[1][1] == 'k') {
-          std::string key = cut[1].substr(10,cut[1].length() - 3);
+          std::string key = cut[1].substr(10,cut[1].length() - 12);
           stack.back().showISBN(key);
         }
         else {
@@ -186,41 +186,43 @@ int main() {
       stack.back().select(cut[1]);
     }
     else if (cut[0] == "modify") {
-      Book_Information change;
-      for (int i = 1; i < cut.size(); i++) {
-        if (cut[i][1] == 'I') {
-          std::string isbn = cut[1].substr(6);
-          strcpy(change.ISBN, isbn.c_str());
-        }
-        else if (cut[i][1] == 'n') {
-          std::string name = cut[i].substr(7,cut[i].length() - 3);
-          strcpy(change.BookName, name.c_str());
-        }
-        else if (cut[i][1] == 'a') {
-          std::string Aname = cut[i].substr(9,cut[i].length() - 3);
-          strcpy(change.AuthorName, Aname.c_str());
-        }
-        else if (cut[i][1] == 'k') {
-          std::string key = cut[i].substr(10,cut[i].length() - 3);
-          strcpy(change.Keywords, key.c_str());
-        }
-        else if (cut[i][1] == 'p') {
-          try {
-            std::string p = cut[i].substr(7, cut[i].length() - 2);
-            change.Price = std::stod(p);
-          } catch (std::invalid_argument &error) {
+      Book_Information change(stack.back().selected);
+      try {
+        for (int i = 1; i < cut.size(); i++) {
+          if (cut[i][1] == 'I') {
+            std::string isbn = cut[1].substr(6);
+            if (isbn == stack.back().selected) {
+              std::cout << "Invalid\n";
+              throw;
+            }
+            strcpy(change.ISBN, isbn.c_str());
+            stack.back().selected = isbn;
+          } else if (cut[i][1] == 'n') {
+            std::string name = cut[i].substr(7, cut[i].length() - 9);
+            strcpy(change.BookName, name.c_str());
+          } else if (cut[i][1] == 'a') {
+            std::string Aname = cut[i].substr(9, cut[i].length() - 11);
+            strcpy(change.AuthorName, Aname.c_str());
+          } else if (cut[i][1] == 'k') {
+            std::string key = cut[i].substr(10, cut[i].length() - 12);
+            strcpy(change.Keywords, key.c_str());
+          } else if (cut[i][1] == 'p') {
+            try {
+              std::string p = cut[i].substr(7);
+              change.Price = std::stod(p);
+            } catch (std::invalid_argument &error) {
+              std::cout << "Invalid\n";
+            } catch (std::out_of_range &error) {
+              std::cout << "Invalid\n";
+            }
+          } else {
             std::cout << "Invalid\n";
-          } catch (std::out_of_range &error) {
-            std::cout << "Invalid\n";
+            throw;
           }
         }
-        else {
-          std::cout << "Invalid\n";
-          continue;
-        }
-      }
-      if (change.ISBN[0] == '\0') {
-        strcpy(change.ISBN, stack.back().selected.c_str());
+      } catch (...) {
+        std::cout << "Invalid\n";
+        continue;
       }
       stack.back().modify(change);
     }

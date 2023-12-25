@@ -207,12 +207,22 @@ void User::modify(Book_Information &b) {
   }
   if (!real) {
     // Check integrity and insert the book
-    if (b.ISBN[0] == '\0' || b.BookName[0] == '\0' || b.AuthorName[0] == '\0'
-      || b.Keywords[0] == '\0' || b.Price < 0) {
-      std::cout << "Invalid\n";
-      return;
-    }
+//    if ((b.ISBN[0] == '\0' && theBook.ISBN[0] == '0') || (b.BookName[0] == '\0' && theBook.BookName[0] == '\0')
+//      || (b.AuthorName[0] == '\0' && theBook.AuthorName[0] == '\0') || (b.Keywords[0] == '\0' && b.Keywords[0] == '\0')
+//      || (b.Price < 0 && theBook.Price < 0)) {
+////      std::cout << "Invalid\n";
+//      if (b.ISBN[0] != '\0') strcpy(theBook.ISBN, b.ISBN);
+//      if (b.BookName[0] != '\0') strcpy(theBook.BookName, b.BookName);
+//      if (b.AuthorName[0] != '\0') strcpy(theBook.AuthorName, b.AuthorName);
+//      if (b.Keywords[0] != '\0') strcpy(theBook.Keywords, b.Keywords);
+//      if (b.Quantity != -1) b.Quantity = theBook.Quantity;
+//      if (b.Price >= 0) theBook.Price = b.Price;
+//      if (b.TotalCost != -1) theBook.TotalCost = b.TotalCost;
+//      return;
+//    }
+    real = true;
     BS.InsertBook(b);
+    theBook = b;
     return;
   }
   if (b.ISBN[0] == '\0') strcpy(b.ISBN, theBook.ISBN);
@@ -220,11 +230,12 @@ void User::modify(Book_Information &b) {
   if (b.AuthorName[0] == '\0') strcpy(b.AuthorName, theBook.AuthorName);
   if (b.Keywords[0] == '\0') strcpy(b.Keywords, theBook.Keywords);
   b.pos = theBook.pos;
-  if (b.Quantity == -1) b.Quantity = theBook.Quantity;
+  if (b.Quantity == 0) b.Quantity = theBook.Quantity;
   if (b.Price < 0) b.Price = theBook.Price;
-  if (b.TotalCost == -1) b.TotalCost = theBook.TotalCost;
+  if (b.TotalCost < 0) b.TotalCost = theBook.TotalCost;
   // Filter out information that does not require replacement.
   BS.Modify(theBook, b);
+  theBook = b;
 }
 void User::import(int quan, double totalcost) {
   if (!Check(3)) {
@@ -239,7 +250,7 @@ void User::import(int quan, double totalcost) {
     std::cout << "Invalid\n";
     return;
   }
-  theBook.Quantity -= quan;
+  theBook.Quantity += quan;
   BS.shelf.open("SHELF");
   BS.shelf.seekp(theBook.pos, std::ios::beg);
   BS.shelf.write(reinterpret_cast<char*>(&theBook), sizeof(Book_Information));
