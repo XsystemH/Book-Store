@@ -192,6 +192,10 @@ int main() {
         std::cout << "Invalid\n";
         continue;
       }
+      if (q == 0) {
+        std::cout << "Invalid\n";
+        continue;
+      }
       stack.back().buy(cut[1], q);
     }
     else if (cut[0] == "select") {
