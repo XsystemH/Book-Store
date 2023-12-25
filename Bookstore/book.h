@@ -31,6 +31,7 @@ public:
   Book_Information(std::string isbn) { // create a null book
     strcpy(ISBN, isbn.c_str());
     strcpy(BookName, "");
+    strcpy(AuthorName, "");
     strcpy(Keywords, "");
     Price = -1;
     Quantity = 0;
@@ -294,7 +295,7 @@ public:
   // std::vector<Book_Information>
   void FindAll();
   void FindISBN(std::string &isbn); // maybe void is better?
-  void FindName(std::string &Aname);
+  void FindName(std::string &name);
   void FindAuthor(std::string &Aname);
   void FIndKeyword(std::string &Word);
 

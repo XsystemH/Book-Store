@@ -122,10 +122,14 @@ void BookShelf::InsertBook(Book_Information &book) {
   BS.shelf.close();
   ISBN_info isbn(book);
   ISBN_chain->insert(isbn);
-  Name_info name(book);
-  Name_chain->insert(name);
-  Author_info author(book);
-  Author_chain->insert(author);
+  if (book.BookName[0] != '\0') {
+    Name_info name(book);
+    Name_chain->insert(name);
+  }
+  if (book.AuthorName[0] != '\0') {
+    Author_info author(book);
+    Author_chain->insert(author);
+  }
   char keywords[65];
   strcpy(keywords, book.Keywords);
   char* key = strtok(keywords, "|");
@@ -138,10 +142,14 @@ void BookShelf::InsertBook(Book_Information &book) {
 void BookShelf::DeleteBook(Book_Information &book) {
   ISBN_info isbn(book);
   ISBN_chain->deleteI(isbn);
-  Name_info name(book);
-  Name_chain->deleteI(name);
-  Author_info author(book);
-  Author_chain->deleteI(author);
+  if (book.BookName[0] != '\0') {
+    Name_info name(book);
+    Name_chain->deleteI(name);
+  }
+  if (book.AuthorName[0] != '\0') {
+    Author_info author(book);
+    Author_chain->deleteI(author);
+  }
   char keywords[65];
   strcpy(keywords, book.Keywords);
   char* key = strtok(keywords, "|");
@@ -155,10 +163,14 @@ void BookShelf::Modify(Book_Information &oldbook, Book_Information &newbook) {
   DeleteBook(oldbook);
   ISBN_info isbn(newbook);
   ISBN_chain->insert(isbn);
-  Name_info name(newbook);
-  Name_chain->insert(name);
-  Author_info author(newbook);
-  Author_chain->insert(author);
+  if (newbook.BookName[0] != '\0'){
+    Name_info name(newbook);
+    Name_chain->insert(name);
+  }
+  if (newbook.AuthorName[0] != '\0'){
+    Author_info author(newbook);
+    Author_chain->insert(author);
+  }
   char keywords[65];
   strcpy(keywords, newbook.Keywords);
   char* key = strtok(keywords, "|");

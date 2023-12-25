@@ -51,7 +51,7 @@ public:
       Node.write(reinterpret_cast<char*>(&Nsum), sizeof(int));
     }
     else {
-      emp = true;
+      emp = false;
       Node.seekg(0, std::ios::beg);
       Node.read(reinterpret_cast<char*>(&head), sizeof(int)); // 读入已有head
       Node.seekg(sizeof(int), std::ios::beg);

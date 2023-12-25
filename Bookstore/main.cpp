@@ -32,6 +32,13 @@ int main() {
   while (std::cin.getline(cmd, 1000)) {
 //    std::cout << test << ": ";
 //    test++;
+//    if (test == 29) {
+//      test--;
+//      test++;
+//    }
+    if (cmd[0]=='\0') {
+      continue;
+    }
     if (stack.empty()) {
       User visitor;
       visitor.Privilege = 0;

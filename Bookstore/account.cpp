@@ -165,6 +165,10 @@ void User::buy(std::string &ISBN, int quan) {
     return;
   }
   std::vector<ISBN_info> result = BS.ISBN_chain->find(ISBN);
+  if (result.empty()) {
+    std::cout << "Invalid\n";
+    return;
+  }
   Book_Information book;
   BS.shelf.open("SHELF");
   BS.shelf.seekg(result.begin()->pos, std::ios::beg);
@@ -201,6 +205,7 @@ void User::select(std::string &isbn) {
     BS.shelf.seekg(result.begin()->pos, std::ios::beg);
     BS.shelf.read(reinterpret_cast<char*>(&theBook), sizeof(Book_Information));
     BS.shelf.close();
+//    theBook.Print();
   }
 }
 void User::modify(Book_Information &b) {
