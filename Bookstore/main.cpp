@@ -247,6 +247,11 @@ int main() {
             if (!BS.ISBN_chain->find(isbn).empty()) {
               throw error();
             }
+            for(int j = 1; j < stack.size(); j++) {
+              if (stack[j].selected == stack.back().selected) {
+                stack[j].selected = isbn;
+              }
+            }
             strcpy(change.ISBN, isbn.c_str());
             stack.back().selected = isbn;
           } else if (cut[i][1] == 'n') {
