@@ -13,3 +13,19 @@ bool checkNLU(std::string &str) {
   }
   return true;
 };
+bool checkVA(const std::string& str) {
+  for (char c : str) {
+    if (c < 32 || c > 126) {
+      return false;
+    }
+  }
+  return true;
+}
+bool checkVAN(const std::string& str) {
+  for (char c : str) {
+    if ((c < 32 || c > 126) || c == '"') {
+      return false;
+    }
+  }
+  return true;
+}

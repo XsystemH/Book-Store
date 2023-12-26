@@ -69,9 +69,17 @@ int main() {
         continue;
       }
       else if (cut.size() == 2) {
+        if (!checkNLU(cut[1])){
+          std::cout << "Invalid\n";
+          continue;
+        }
         stack.back().su(cut[1]);
       }
       else if (cut.size() == 3) {
+        if (!checkNLU(cut[1]) || !checkNLU(cut[2])){
+          std::cout << "Invalid\n";
+          continue;
+        }
         stack.back().su(cut[1], cut[2]);
       }
       else {
@@ -232,10 +240,18 @@ int main() {
         std::cout << "Invalid\n";
         continue;
       }
+      if (!checkVAN(cut[1])){
+        std::cout << "Invalid\n";
+        continue;
+      }
       stack.back().buy(cut[1], q);
     }
     else if (cut[0] == "select") {
       if (cut.size() != 2) {
+        std::cout << "Invalid\n";
+        continue;
+      }
+      if (!checkVA(cut[1])){
         std::cout << "Invalid\n";
         continue;
       }
@@ -259,6 +275,9 @@ int main() {
             if (isbn == stack.back().selected) {
               throw error();
             }
+            if (!checkVA(isbn)){
+              throw error();
+            }
             if (!BS.ISBN_chain->find(isbn).empty()) {
               throw error();
             }
@@ -275,6 +294,10 @@ int main() {
             }
             already[1] = true;
             std::string name = cut[i].substr(7, cut[i].length() - 8);
+            if (!checkVAN(name)){
+              std::cout << "Invalid\n";
+              continue;
+            }
             strcpy(change.BookName, name.c_str());
           } else if (cut[i][1] == 'a') {
             if (already[2]) {
@@ -282,6 +305,10 @@ int main() {
             }
             already[2] = true;
             std::string Aname = cut[i].substr(9, cut[i].length() - 10);
+            if (!checkVAN(Aname)){
+              std::cout << "Invalid\n";
+              continue;
+            }
             strcpy(change.AuthorName, Aname.c_str());
           } else if (cut[i][1] == 'k') {
             if (already[3]) {
@@ -289,6 +316,10 @@ int main() {
             }
             already[3] = true;
             std::string key = cut[i].substr(10, cut[i].length() - 11);
+            if (!checkVAN(key)){
+              std::cout << "Invalid\n";
+              continue;
+            }
             strcpy(change.Keywords, key.c_str());
           } else if (cut[i][1] == 'p') {
             if (already[4]) {
