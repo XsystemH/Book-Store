@@ -381,7 +381,7 @@ int main() {
     else if (cut[0] == "report") {
       // todo
     }
-    else if (cut[0] == "quit" || cut[0] == "exit") {
+    else if ((cut[0] == "quit" || cut[0] == "exit") && cut.size() == 1) {
       break;
     }
     else {
