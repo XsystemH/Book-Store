@@ -90,6 +90,12 @@ void BookShelf::FindAuthor(std::string &name) {
 }
 
 void BookShelf::FIndKeyword(std::string &key) {
+  for (char c : key) {
+    if (c == '|') {
+      std::cout << "Invalid\n";
+      return;
+    }
+  }
   std::vector<std::pair<int, int>> poss = Keyword_chain->findN(key);
   std::vector<int> pos = Keyword_chain->findI(poss, key);
   std::vector<Book_Information> list;
