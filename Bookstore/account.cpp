@@ -97,6 +97,10 @@ void User::ua(std::string &UID, std::string &PW, int PV, std::string &UN) {
     std::cout << "Invalid\n";
     return;
   }
+  if (PV != 0 && PV != 1 && PV != 3) {
+    std::cout << "Invalid\n";
+    return;
+  }
   Account_info new_user;
   strcpy(new_user.index, UID.c_str());
   strcpy(new_user.value, UN.c_str());
