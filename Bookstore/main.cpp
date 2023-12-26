@@ -195,7 +195,7 @@ int main() {
         }
       }
       else {
-        if (cut[1].substr(0, 6) == "-ISBN=" && cut[1].back() == '\"') {
+        if (cut[1].substr(0, 6) == "-ISBN=") {
           std::string isbn = cut[1].substr(6);
           if (isbn == "" || !checkNLU(isbn, 20)) {
             std::cout << "Invalid\n";
@@ -344,7 +344,7 @@ int main() {
             already[4] = true;
             try {
               std::string p = cut[i].substr(7);
-              change.Price = std::stod(p);
+              change.Price = StringtoDouble(p);
             } catch (std::invalid_argument &error) {
               std::cout << "Invalid\n";
             } catch (std::out_of_range &error) {
