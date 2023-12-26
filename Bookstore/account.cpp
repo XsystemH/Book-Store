@@ -22,6 +22,7 @@ void User::su(std::string &UID, std::string &PW) {
     std::cout << "Invalid\n";
     return;
   }
+  oplog.addlog(1, stack.back().UserID, stack.back().Privilege, UID, "su", theBook, -1);
 }
 void User::su(std::string &UID) {
   std::vector<Account_info> result = accounts.find(UID);
@@ -38,14 +39,16 @@ void User::su(std::string &UID) {
     std::cout << "Invalid\n";
     return;
   }
+  oplog.addlog(1, stack.back().UserID, stack.back().Privilege, UID, "su", theBook, -1);
 }
 void User::lo(std::string &UID) {
   if (stack.empty()) {
     std::cout << "Invalid\n";
     return;
   }
+  oplog.addlog(1, stack.back().UserID, stack.back().Privilege, UID, "logout", theBook, -1);
   stack.pop_back(); // Pop out the last element in the login stack.
-}
+} // did not use
 void User::rg(std::string &UID, std::string &PW, std::string &UN) {
   // add user in the file
   // need privilege: 0
@@ -59,6 +62,7 @@ void User::rg(std::string &UID, std::string &PW, std::string &UN) {
   strcpy(new_user.Password, PW.c_str());
   new_user.pos = 1;
   accounts.insert(new_user);
+  oplog.addlog(1, stack.back().UserID, stack.back().Privilege, UID, "register", theBook, -1);
 }
 void User::pw(std::string &UID, std::string &CP, std::string &NP) {
   std::vector<Account_info> result = accounts.find(UID);
@@ -73,6 +77,7 @@ void User::pw(std::string &UID, std::string &CP, std::string &NP) {
   accounts.deleteI(*result.begin());
   strcpy(result.begin()->Password, NP.c_str());
   accounts.insert(*result.begin());
+  oplog.addlog(1, stack.back().UserID, stack.back().Privilege, UID, "passwd", theBook, -1);
 }
 void User::pw(std::string &UID, std::string &NP) {
   std::vector<Account_info> result = accounts.find(UID);
@@ -87,6 +92,7 @@ void User::pw(std::string &UID, std::string &NP) {
   accounts.deleteI(*result.begin());
   strcpy(result.begin()->Password, NP.c_str());
   accounts.insert(*result.begin());
+  oplog.addlog(1, stack.back().UserID, stack.back().Privilege, UID, "passwd", theBook, -1);
 }
 void User::ua(std::string &UID, std::string &PW, int PV, std::string &UN) {
   if (!Check(PV + 1)) {
@@ -107,6 +113,7 @@ void User::ua(std::string &UID, std::string &PW, int PV, std::string &UN) {
   strcpy(new_user.Password, PW.c_str());
   new_user.pos = PV;
   accounts.insert(new_user);
+  oplog.addlog(1, stack.back().UserID, stack.back().Privilege, UID, "useradd", theBook, PV);
 }
 void User::de(std::string &UID) {
   if (!Check(7)) {
@@ -125,6 +132,7 @@ void User::de(std::string &UID) {
     }
   }
   accounts.deleteI(*result.begin());
+  oplog.addlog(1, stack.back().UserID, stack.back().Privilege, UID, "delete", theBook, -1);
 }
 // above are functions about accounts management
 // below are functions about bookshelf management
@@ -134,6 +142,7 @@ void User::show() {
     return;
   }
   BS.FindAll();
+  oplog.addlog(2, stack.back().UserID, stack.back().Privilege, "", "show All", theBook, -1);
 }
 void User::showISBN(std::string &isbn) {
   if (!Check(1)) {
@@ -141,6 +150,7 @@ void User::showISBN(std::string &isbn) {
     return;
   }
   BS.FindISBN(isbn);
+  oplog.addlog(2, stack.back().UserID, stack.back().Privilege, isbn, "show ISBN", theBook, -1);
 }
 void User::showBookName(std::string &bookname) {
   if (!Check(1)) {
@@ -148,6 +158,7 @@ void User::showBookName(std::string &bookname) {
     return;
   }
   BS.FindName(bookname);
+  oplog.addlog(2, stack.back().UserID, stack.back().Privilege, bookname, "show name", theBook, -1);
 }
 void User::showAuthor(std::string &authorname) {
   if (!Check(1)) {
@@ -155,13 +166,20 @@ void User::showAuthor(std::string &authorname) {
     return;
   }
   BS.FindAuthor(authorname);
+  oplog.addlog(2, stack.back().UserID, stack.back().Privilege, authorname, "show author", theBook, -1);
 }
 void User::showKeyword(std::string &key) {
   if (!Check(1)) {
     std::cout << "Invalid\n";
     return;
   }
-  BS.FIndKeyword(key);
+  try {
+    BS.FIndKeyword(key);
+  } catch (...) {
+    std::cout << "Invalid\n";
+    return;
+  }
+  oplog.addlog(2, stack.back().UserID, stack.back().Privilege, key, "show keyword", theBook, -1);
 }
 void User::buy(std::string &ISBN, int quan) {
   if (!Check(1)) {
@@ -183,14 +201,15 @@ void User::buy(std::string &ISBN, int quan) {
     return;
   }
   book.Quantity -= quan;
-  // todo log
   if (book.Price < 0) {
     flog.recordin(0.00);
     std::cout << "0.00\n";
+    oplog.addlog(2, stack.back().UserID, stack.back().Privilege, ISBN, "buy", theBook, 0.00);
   }
   else {
     flog.recordin(quan * book.Price);
     std::cout << std::fixed << std::setprecision(2) << quan * book.Price << "\n";
+    oplog.addlog(2, stack.back().UserID, stack.back().Privilege, ISBN, "buy", theBook, quan * book.Price);
   }
   BS.shelf.open("SHELF");
   BS.shelf.seekp(result.begin()->pos, std::ios::beg);
@@ -207,7 +226,12 @@ void User::select(std::string &isbn) {
   if (result.empty()) {
     real = true;
     theBook = Book_Information(isbn);
-    BS.InsertBook(theBook);
+    try {
+      BS.InsertBook(theBook);
+    } catch (...) {
+      std::cout << "Invalid\n";
+      return;
+    }
   }
   else {
     real = true;
@@ -217,6 +241,7 @@ void User::select(std::string &isbn) {
     BS.shelf.close();
 //    theBook.Print();
   }
+  oplog.addlog(2, stack.back().UserID, stack.back().Privilege, isbn, "select", theBook, -1);
 }
 void User::modify(Book_Information &b) {
   if (!Check(3)) {
@@ -239,6 +264,7 @@ void User::modify(Book_Information &b) {
     return;
   }
   theBook = b;
+  oplog.addlog(2, stack.back().UserID, stack.back().Privilege, theBook.ISBN, "modify", theBook, -1);
 }
 void User::import(int quan, double totalcost) {
   if (!Check(3)) {
@@ -258,6 +284,6 @@ void User::import(int quan, double totalcost) {
   BS.shelf.seekp(theBook.pos, std::ios::beg);
   BS.shelf.write(reinterpret_cast<char*>(&theBook), sizeof(Book_Information));
   BS.shelf.close();
-  // todo log
+  oplog.addlog(2, stack.back().UserID, stack.back().Privilege, selected, "import", theBook, totalcost);
   flog.recordout(totalcost);
 }

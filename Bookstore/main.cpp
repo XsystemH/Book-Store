@@ -13,13 +13,7 @@ BookShelf BS;
 blockchain<Account_node, Account_info> accounts("Account_NODE", "Account_INFO");
 std::vector<User> stack;
 financial flog;
-
-bool isOnlySpaces(const std::string& str) {
-  for (char c : str) {
-    if (c != ' ') return false;
-  }
-  return true;
-}
+log oplog;
 
 int main() {
   if (accounts.empty()) {
@@ -33,6 +27,8 @@ int main() {
     strcpy(r.Password, "sjtu");// PW
     r.pos = 7; // privilege
     accounts.insert(r);
+    Book_Information b;
+    oplog.addlog(1, root.UserID, root.Privilege, "root", "create root", b, -1);
   } // create root
   char cmd[1000];
 //  int test = 1;
@@ -88,6 +84,7 @@ int main() {
       }
     }
     else if (cut[0] == "logout") {
+      User temp = stack.back();
       if (cut.size() == 1 && stack.back().Privilege) stack.pop_back();
       else {
         std::cout << "Invalid\n";
@@ -109,6 +106,7 @@ int main() {
 //    theBook.Print();
         }
       } // renew the book when log out
+      oplog.addlog(1, temp.UserID, temp.Privilege, temp.UserID, "logout", stack.back().theBook, -1);
     }
     else if (cut[0] == "register") {
       if (cut.size() != 4) {
@@ -163,6 +161,10 @@ int main() {
     }
     else if (cut[0] == "delete") {
       if (cut.size() != 2) {
+        std::cout << "Invalid\n";
+        continue;
+      }
+      if (!checkNLU(cut[1], 20)) {
         std::cout << "Invalid\n";
         continue;
       }
@@ -238,12 +240,21 @@ int main() {
         std::cout << "Invalid\n";
         continue;
       }
+      if (!checkVAN(cut[1], 20)){
+        std::cout << "Invalid\n";
+        continue;
+      }
       int q = 0;
       bool isint = true;
+      if (cut[2].size() > 10) {
+        std::cout << "Invalid\n";
+        continue;
+      }
       for(char c : cut[2]) {
         if (c == '.') {
           std::cout << "Invalid\n";
           isint = false;
+          break;
         }
         q *= 10;
         q += int(c - '0');
@@ -253,10 +264,6 @@ int main() {
         continue;
       }
       if (q == 0) {
-        std::cout << "Invalid\n";
-        continue;
-      }
-      if (!checkVAN(cut[1], 20)){
         std::cout << "Invalid\n";
         continue;
       }
@@ -376,10 +383,23 @@ int main() {
       }
     }
     else if (cut[0] == "log") {
-      // todo
+      if (!stack.back().Check(7)) {
+        std::cout << "Invalid\n";
+        continue;
+      }
+      else oplog.showall();
     }
     else if (cut[0] == "report") {
-      // todo
+      if (cut.size() != 2) {
+        std::cout << "Invalid\n";
+        continue;
+      }
+      if (cut[1] == "employee") oplog.showemployee();
+      else if (cut[1] == "finance") oplog.showfinance();
+      else {
+        std::cout << "Invalid\n";
+        continue;
+      }
     }
     else if ((cut[0] == "quit" || cut[0] == "exit") && cut.size() == 1) {
       break;

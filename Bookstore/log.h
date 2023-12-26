@@ -8,6 +8,8 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include "book.h"
+#include <ctime>
 
 class financial {
 public:
@@ -109,10 +111,31 @@ struct op {
   char UserID[65];
   int UserPV;
   int operation; // 1 on account; 2 on book
-  char ISBN[21];
+  char ISBN[65];
   char ID[65];
-  char CMD[256];
-  bool IsInvalid;
+  char CMD[20];
+  int num = -1;
+  double pirce = 0.00;
+  char Time[40];
+  Book_Information after;
+
+  void Print() {
+    std::cout << "UserID: " << UserID << "\t";
+    std::cout << "Privilege: " << UserPV << "\t";
+    std::cout << "CMD: " << CMD << "\t";
+    if (operation == 2) {
+      std::cout << "ISBN(or else): " << ISBN << "\t";
+    }
+    if (operation == 1) {
+      std::cout << "ID: " << ID << "\t";
+    }
+    if (num != -1) std::cout << num << "\t";
+    std::cout << "At: " << Time << std::endl;
+    if (operation == 2) {
+      std::cout << "After operation: ";
+      after.Print();
+    }
+  }
 };
 
 class log {
@@ -129,10 +152,117 @@ public:
       Log.open("operation_log", std::ios::out | std::ios::binary);
       Log.close();
       Log.open("operation_log");
+      lognum = 0;
+      Log.seekp(0, std::ios::beg);
+      Log.write(reinterpret_cast<char*>(&lognum), sizeof(int));
+    }
+    else {
       Log.seekg(0, std::ios::beg);
       Log.read(reinterpret_cast<char*>(&lognum), sizeof(int));
     }
   }
+  ~log() = default;
+
+public:
+
+  const int MAX_TIMESTAMP_LENGTH = 26;
+
+  void getCurrentTimestampAsCString(char* timestampStr) {
+    // 获取当前时间戳
+    time_t timestamp = time(nullptr);
+
+    // 将时间戳转换为C风格字符串
+    std::strftime(timestampStr, MAX_TIMESTAMP_LENGTH, "%Y-%m-%d %H:%M:%S", std::localtime(&timestamp));
+  }
+
+  void addlog(int OPER, std::string &UID, int PV, std::string Object, std::string CMD, Book_Information &after, double price) {
+    op newoperation;
+    getCurrentTimestampAsCString(newoperation.Time);
+    newoperation.operation = OPER;
+    strcpy(newoperation.UserID, UID.c_str());
+    newoperation.UserPV = PV;
+    if (OPER == 1) {
+      strcpy(newoperation.ID, Object.c_str());
+      strcpy(newoperation.ISBN, "");
+    }
+    else if (OPER == 2) {
+      strcpy(newoperation.ISBN, Object.c_str());
+      strcpy(newoperation.ID, "");
+      newoperation.after = after;
+    }
+    strcpy(newoperation.CMD, CMD.c_str());
+    newoperation.num = -1;
+    newoperation.pirce = price;
+    Log.open("operation_log");
+    Log.seekp(sizeof(int) + lognum * sizeof(op), std::ios::beg);
+    Log.write(reinterpret_cast<char*>(&newoperation), sizeof(op));
+    lognum++;
+    Log.seekp(0, std::ios::beg);
+    Log.write(reinterpret_cast<char*>(&lognum), sizeof(int));
+    Log.close();
+  }
+  void addlog(int OPER, std::string &UID, int PV, std::string Object, std::string CMD, Book_Information &after, int num) {
+    op newoperation;
+    getCurrentTimestampAsCString(newoperation.Time);
+    newoperation.operation = OPER;
+    strcpy(newoperation.UserID, UID.c_str());
+    newoperation.UserPV = PV;
+    if (OPER == 1) {
+      strcpy(newoperation.ID, Object.c_str());
+      strcpy(newoperation.ISBN, "");
+    }
+    else if (OPER == 2) {
+      strcpy(newoperation.ISBN, Object.c_str());
+      strcpy(newoperation.ID, "");
+      newoperation.after = after;
+    }
+    strcpy(newoperation.CMD, CMD.c_str());
+    newoperation.num = num;
+    Log.open("operation_log");
+    Log.seekp(sizeof(int) + lognum * sizeof(op), std::ios::beg);
+    Log.write(reinterpret_cast<char*>(&newoperation), sizeof(op));
+    lognum++;
+    Log.seekp(0, std::ios::beg);
+    Log.write(reinterpret_cast<char*>(&lognum), sizeof(int));
+    Log.close();
+  }
+
+  void showall() {
+    Log.open("operation_log");
+    Log.seekg(sizeof(int), std::ios::beg);
+    op temp;
+    for (int i = 0; i < lognum; i++) {
+      Log.read(reinterpret_cast<char*>(&temp), sizeof(op));
+      temp.Print();
+    }
+  }
+  void showemployee() {
+    Log.open("operation_log");
+    Log.seekg(sizeof(int), std::ios::beg);
+    op temp;
+    for (int i = 0; i < lognum; i++) {
+      Log.read(reinterpret_cast<char*>(&temp), sizeof(op));
+      if (temp.UserPV == 3) temp.Print();
+    }
+  }
+  void showfinance() {
+    Log.open("operation_log");
+    Log.seekg(sizeof(int), std::ios::beg);
+    op temp;
+    for (int i = 0; i < lognum; i++) {
+      Log.read(reinterpret_cast<char*>(&temp), sizeof(op));
+      if (std::string(temp.CMD) == "buy") {
+        std::cout << "\033[31m" << std::fixed << std::setprecision(2) << temp.pirce << "\033[0m\t";
+        temp.Print();
+      }
+      else if (std::string(temp.CMD) == "import") {
+        std::cout << "\033[32m" << std::fixed << std::setprecision(2) << temp.pirce << "\033[0m\t";
+        temp.Print();
+      }
+    }
+  }
 };
+
+extern log oplog;
 
 #endif //CODE_LOG_H

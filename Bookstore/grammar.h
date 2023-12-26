@@ -71,3 +71,10 @@ double StringtoDouble (std::string &str) {
   ans = a + b;
   return ans;
 }
+
+bool isOnlySpaces(const std::string& str) {
+  for (char c : str) {
+    if (c != ' ') return false;
+  }
+  return true;
+}

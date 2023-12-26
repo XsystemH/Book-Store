@@ -92,8 +92,7 @@ void BookShelf::FindAuthor(std::string &name) {
 void BookShelf::FIndKeyword(std::string &key) {
   for (char c : key) {
     if (c == '|') {
-      std::cout << "Invalid\n";
-      return;
+      throw error();
     }
   }
   std::vector<std::pair<int, int>> poss = Keyword_chain->findN(key);
@@ -142,8 +141,7 @@ void BookShelf::InsertBook(Book_Information &book) {
   std::set<std::string> used;
   while (key) {
     if (used.find(key) != used.end()) {
-      std::cout << "Invalid\n";
-      return;
+      throw error();
     }
     used.emplace(key);
     Keyword_info kw(book, key);
