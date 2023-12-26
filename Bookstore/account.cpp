@@ -204,12 +204,12 @@ void User::buy(std::string &ISBN, int quan) {
   if (book.Price < 0) {
     flog.recordin(0.00);
     std::cout << "0.00\n";
-    oplog.addlog(2, stack.back().UserID, stack.back().Privilege, ISBN, "buy", theBook, 0.00);
+    oplog.addlog(2, stack.back().UserID, stack.back().Privilege, ISBN, "buy", book, 0.00);
   }
   else {
     flog.recordin(quan * book.Price);
     std::cout << std::fixed << std::setprecision(2) << quan * book.Price << "\n";
-    oplog.addlog(2, stack.back().UserID, stack.back().Privilege, ISBN, "buy", theBook, quan * book.Price);
+    oplog.addlog(2, stack.back().UserID, stack.back().Privilege, ISBN, "buy", book, quan * book.Price);
   }
   BS.shelf.open("SHELF");
   BS.shelf.seekp(result.begin()->pos, std::ios::beg);
