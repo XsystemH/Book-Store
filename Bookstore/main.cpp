@@ -387,15 +387,24 @@ int main() {
         std::cout << "Invalid\n";
         continue;
       }
-      else oplog.showall();
+      else {
+        std::cout << "-----OPERATION   LOG-----" << std::endl;
+        oplog.showall();
+      }
     }
     else if (cut[0] == "report") {
       if (cut.size() != 2) {
         std::cout << "Invalid\n";
         continue;
       }
-      if (cut[1] == "employee") oplog.showemployee();
-      else if (cut[1] == "finance") oplog.showfinance();
+      if (cut[1] == "employee") {
+        std::cout << "-----EMPLOYEE REPORT-----" << std::endl;
+        oplog.showemployee();
+      }
+      else if (cut[1] == "finance") {
+        std::cout << "-----FINANCE  REPORT-----" << std::endl;
+        oplog.showfinance();
+      }
       else {
         std::cout << "Invalid\n";
         continue;

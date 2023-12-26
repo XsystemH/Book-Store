@@ -131,7 +131,8 @@ struct op {
     }
     if (num != -1) std::cout << num << "\t";
     std::cout << "At: " << Time << std::endl;
-    if (operation == 2) {
+    std::string s = CMD;
+    if (operation == 2 && (s == "buy" || s == "import" || s == "modify" || s == "select")) {
       std::cout << "After operation: ";
       after.Print();
     }
@@ -160,6 +161,7 @@ public:
       Log.seekg(0, std::ios::beg);
       Log.read(reinterpret_cast<char*>(&lognum), sizeof(int));
     }
+    Log.close();
   }
   ~log() = default;
 
@@ -235,6 +237,7 @@ public:
       Log.read(reinterpret_cast<char*>(&temp), sizeof(op));
       temp.Print();
     }
+    Log.close();
   }
   void showemployee() {
     Log.open("operation_log");
@@ -242,10 +245,16 @@ public:
     op temp;
     for (int i = 0; i < lognum; i++) {
       Log.read(reinterpret_cast<char*>(&temp), sizeof(op));
-      if (temp.UserPV == 3) temp.Print();
+      if (temp.UserPV == 3)
+      {
+        std::cout << i << ": ";
+        temp.Print();
+      }
     }
+    Log.close();
   }
   void showfinance() {
+    flog.show();
     Log.open("operation_log");
     Log.seekg(sizeof(int), std::ios::beg);
     op temp;
@@ -260,6 +269,7 @@ public:
         temp.Print();
       }
     }
+    Log.close();
   }
 };
 
