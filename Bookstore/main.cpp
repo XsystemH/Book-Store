@@ -371,9 +371,7 @@ int main() {
         double total = std::stod(cut[2]);
         if (q <= 0 || total < 0) throw error();
         stack.back().import(q, total);
-      } catch (std::invalid_argument &e) {
-        std::cout << "Invalid\n";
-      } catch (std::out_of_range &e) {
+      } catch (...) {
         std::cout << "Invalid\n";
       }
     }
