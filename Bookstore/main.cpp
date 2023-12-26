@@ -242,8 +242,7 @@ int main() {
           if (cut[i][1] == 'I') {
             std::string isbn = cut[1].substr(6);
             if (isbn == stack.back().selected) {
-              std::cout << "Invalid\n";
-              throw "";
+              throw error();
             }
             if (!BS.ISBN_chain->find(isbn).empty()) {
               throw error();

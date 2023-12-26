@@ -105,4 +105,34 @@ public:
 
 extern financial flog;
 
+struct op {
+  char UserID[65];
+  int UserPV;
+  int operation; // 1 on account; 2 on book
+  char ISBN[21];
+  char ID[65];
+  char CMD[256];
+  bool IsInvalid;
+};
+
+class log {
+public:
+
+  int lognum;
+  std::fstream Log;
+
+public:
+
+  log() {
+    Log.open("operation_log");
+    if (!Log.good()) {
+      Log.open("operation_log", std::ios::out | std::ios::binary);
+      Log.close();
+      Log.open("operation_log");
+      Log.seekg(0, std::ios::beg);
+      Log.read(reinterpret_cast<char*>(&lognum), sizeof(int));
+    }
+  }
+};
+
 #endif //CODE_LOG_H
