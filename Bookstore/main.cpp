@@ -14,6 +14,13 @@ blockchain<Account_node, Account_info> accounts("Account_NODE", "Account_INFO");
 std::vector<User> stack;
 financial flog;
 
+bool isOnlySpaces(const std::string& str) {
+  for (char c : str) {
+    if (c != ' ') return false;
+  }
+  return true;
+}
+
 int main() {
   if (accounts.empty()) {
     User root;
@@ -37,6 +44,9 @@ int main() {
 //      test++;
 //    }
     if (cmd[0]=='\0') {
+      continue;
+    }
+    if (isOnlySpaces(cmd)) {
       continue;
     }
     if (stack.empty()) {
