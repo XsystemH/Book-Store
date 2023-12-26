@@ -4,7 +4,10 @@
 #include <string>
 
 // check: Num Letters underline
-bool checkNLU(std::string &str) {
+bool checkNLU(std::string &str, int size) {
+  if (str.size() > size) {
+    return false;
+  }
   for (char c : str) {
     if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_') {
       continue;
@@ -13,7 +16,10 @@ bool checkNLU(std::string &str) {
   }
   return true;
 };
-bool checkVA(const std::string& str) {
+bool checkVA(const std::string& str, int size) {
+  if (str.size() > size) {
+    return false;
+  }
   for (char c : str) {
     if (c < 32 || c > 126) {
       return false;
@@ -21,7 +27,10 @@ bool checkVA(const std::string& str) {
   }
   return true;
 }
-bool checkVAN(const std::string& str) {
+bool checkVAN(const std::string& str, int size) {
+  if (str.size() > size) {
+    return false;
+  }
   for (char c : str) {
     if ((c < 32 || c > 126) || c == '"') {
       return false;

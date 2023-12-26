@@ -69,14 +69,14 @@ int main() {
         continue;
       }
       else if (cut.size() == 2) {
-        if (!checkNLU(cut[1])){
+        if (!checkNLU(cut[1], 30)){
           std::cout << "Invalid\n";
           continue;
         }
         stack.back().su(cut[1]);
       }
       else if (cut.size() == 3) {
-        if (!checkNLU(cut[1]) || !checkNLU(cut[2])){
+        if (!checkNLU(cut[1], 30) || !checkNLU(cut[2], 30)){
           std::cout << "Invalid\n";
           continue;
         }
@@ -115,7 +115,7 @@ int main() {
         std::cout << "Invalid\n";
         continue;
       }
-      if (checkNLU(cut[1]) && checkNLU(cut[2]))
+      if (checkNLU(cut[1], 30) && checkNLU(cut[2], 30) && checkVA(cut[3], 30))
         stack.back().rg(cut[1], cut[2], cut[3]);
       else {
         std::cout << "Invalid\n";
@@ -128,7 +128,7 @@ int main() {
         continue;
       }
       else if (cut.size() == 3) {
-        if (checkNLU(cut[1]) && checkNLU(cut[2]))
+        if (checkNLU(cut[1], 30) && checkNLU(cut[2], 30))
           stack.back().pw(cut[1], cut[2]);
         else {
           std::cout << "Invalid\n";
@@ -136,7 +136,7 @@ int main() {
         }
       }
       else if (cut.size() == 4) {
-        if (checkNLU(cut[1]) && checkNLU(cut[2]) && checkNLU(cut[3]))
+        if (checkNLU(cut[1], 30) && checkNLU(cut[2], 30) && checkNLU(cut[3], 30))
           stack.back().pw(cut[1], cut[2], cut[3]);
         else {
           std::cout << "Invalid\n";
@@ -154,7 +154,7 @@ int main() {
         continue;
       }
       int privilege = int(cut[3][0] - '0');
-      if (checkNLU(cut[1]) && checkNLU(cut[2]))
+      if (checkNLU(cut[1], 30) && checkNLU(cut[2], 30) && checkVA(cut[4], 30))
         stack.back().ua(cut[1], cut[2], privilege, cut[4]);
       else {
         std::cout << "Invalid\n";
@@ -197,18 +197,34 @@ int main() {
       else {
         if (cut[1][1] == 'I') {
           std::string isbn = cut[1].substr(6);
+          if (isbn == "" || !checkNLU(isbn, 20)) {
+            std::cout << "Invalid\n";
+            continue;
+          }
           stack.back().showISBN(isbn);
         }
         else if (cut[1][1] == 'n') {
           std::string name = cut[1].substr(7,cut[1].length() - 8);
+          if (name == "" || !checkVAN(name, 60)) {
+            std::cout << "Invalid\n";
+            continue;
+          }
           stack.back().showBookName(name);
         }
         else if (cut[1][1] == 'a') {
           std::string Aname = cut[1].substr(9,cut[1].length() - 10);
+          if (Aname == "" || !checkVAN(Aname, 60)) {
+            std::cout << "Invalid\n";
+            continue;
+          }
           stack.back().showAuthor(Aname);
         }
         else if (cut[1][1] == 'k') {
           std::string key = cut[1].substr(10,cut[1].length() - 11);
+          if (key == "" || !checkVAN(key, 60)) {
+            std::cout << "Invalid\n";
+            continue;
+          }
           stack.back().showKeyword(key);
         }
         else {
@@ -240,7 +256,7 @@ int main() {
         std::cout << "Invalid\n";
         continue;
       }
-      if (!checkVAN(cut[1])){
+      if (!checkVAN(cut[1], 20)){
         std::cout << "Invalid\n";
         continue;
       }
@@ -251,7 +267,7 @@ int main() {
         std::cout << "Invalid\n";
         continue;
       }
-      if (!checkVA(cut[1])){
+      if (!checkVA(cut[1], 20)){
         std::cout << "Invalid\n";
         continue;
       }
@@ -275,7 +291,7 @@ int main() {
             if (isbn == stack.back().selected) {
               throw error();
             }
-            if (!checkVA(isbn)){
+            if (!checkVA(isbn, 20)){
               throw error();
             }
             if (!BS.ISBN_chain->find(isbn).empty()) {
@@ -294,7 +310,7 @@ int main() {
             }
             already[1] = true;
             std::string name = cut[i].substr(7, cut[i].length() - 8);
-            if (!checkVAN(name)){
+            if (!checkVAN(name, 60)){
               std::cout << "Invalid\n";
               continue;
             }
@@ -305,7 +321,7 @@ int main() {
             }
             already[2] = true;
             std::string Aname = cut[i].substr(9, cut[i].length() - 10);
-            if (!checkVAN(Aname)){
+            if (!checkVAN(Aname, 60)){
               std::cout << "Invalid\n";
               continue;
             }
@@ -316,7 +332,7 @@ int main() {
             }
             already[3] = true;
             std::string key = cut[i].substr(10, cut[i].length() - 11);
-            if (!checkVAN(key)){
+            if (!checkVAN(key, 60)){
               std::cout << "Invalid\n";
               continue;
             }
