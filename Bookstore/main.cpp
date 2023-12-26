@@ -369,6 +369,7 @@ int main() {
       try {
         int q = std::stoi(cut[1]);
         double total = std::stod(cut[2]);
+        if (q <= 0 || total < 0) throw error();
         stack.back().import(q, total);
       } catch (std::invalid_argument &e) {
         std::cout << "Invalid\n";
