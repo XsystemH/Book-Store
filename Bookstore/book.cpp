@@ -139,7 +139,13 @@ void BookShelf::InsertBook(Book_Information &book) {
   char keywords[65];
   strcpy(keywords, book.Keywords);
   char* key = strtok(keywords, "|");
+  std::set<std::string> used;
   while (key) {
+    if (used.find(key) != used.end()) {
+      std::cout << "Invalid\n";
+      return;
+    }
+    used.emplace(key);
     Keyword_info kw(book, key);
     Keyword_chain->insert(kw);
     key = strtok(nullptr, "|");
