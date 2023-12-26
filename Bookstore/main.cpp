@@ -236,10 +236,15 @@ int main() {
         std::cout << "Invalid\n";
         continue;
       }
+      std::vector<bool> already(5, false);
       Book_Information change(stack.back().selected);
       try {
         for (int i = 1; i < cut.size(); i++) {
           if (cut[i][1] == 'I') {
+            if (already[0]) {
+              throw error();
+            }
+            already[0] = true;
             std::string isbn = cut[1].substr(6);
             if (isbn == stack.back().selected) {
               throw error();
@@ -255,15 +260,31 @@ int main() {
             strcpy(change.ISBN, isbn.c_str());
             stack.back().selected = isbn;
           } else if (cut[i][1] == 'n') {
+            if (already[1]) {
+              throw error();
+            }
+            already[1] = true;
             std::string name = cut[i].substr(7, cut[i].length() - 8);
             strcpy(change.BookName, name.c_str());
           } else if (cut[i][1] == 'a') {
+            if (already[2]) {
+              throw error();
+            }
+            already[2] = true;
             std::string Aname = cut[i].substr(9, cut[i].length() - 10);
             strcpy(change.AuthorName, Aname.c_str());
           } else if (cut[i][1] == 'k') {
+            if (already[3]) {
+              throw error();
+            }
+            already[3] = true;
             std::string key = cut[i].substr(10, cut[i].length() - 11);
             strcpy(change.Keywords, key.c_str());
           } else if (cut[i][1] == 'p') {
+            if (already[4]) {
+              throw error();
+            }
+            already[4] = true;
             try {
               std::string p = cut[i].substr(7);
               change.Price = std::stod(p);
