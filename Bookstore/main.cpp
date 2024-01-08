@@ -32,7 +32,7 @@ int main() {
   } // create root
   char cmd[1000];
 //  int test = 1;
-  while (std::cin.getline(cmd, 1000)) {
+  while (std::cin.getline(cmd, 20000)) {
 //    std::cout << test << ": ";
 //    test++;
 //    if (test == 29) {
