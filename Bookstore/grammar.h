@@ -22,7 +22,7 @@ bool checkVA(const std::string& str, int size) {
     return false;
   }
   for (char c : str) {
-    if (c < 32 || c > 126) {
+    if (c < 32 || c > 126 || c == ' ') {
       return false;
     }
   }
@@ -33,7 +33,7 @@ bool checkVAN(const std::string& str, int size) {
     return false;
   }
   for (char c : str) {
-    if ((c < 32 || c > 126) || c == '"') {
+    if ((c < 32 || c > 126) || c == '"' || c == ' ') {
       return false;
     }
   }
